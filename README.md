@@ -25,6 +25,8 @@ README intentionally does not duplicate per-API claims. The single
 [API compatibility document](docs/xtdata-api-matrix.md) contains all 138 official APIs,
 workflow mappings, return-shape checks, field-level differences, numeric tolerances,
 known limitations, and retained reproduction tools.
+The step-by-step checklist for adding another API is in the
+[API implementation standard](docs/api-implementation-standard.md).
 
 Unsupported or unverified APIs are marked explicitly and are not silently claimed as
 compatible.

@@ -17,7 +17,7 @@ API surface coverage and behavioral compatibility are intentionally reported sep
 
 文件桥接对可能耗时较长的批量详情和历史数据下载统一写入
 `<bridge_root>/status/<request_id>.json`。状态文件包含 `state`（`running`、
-`finished`、`failed` 或 `cancelled`）、`processed`、`total`、`failed`、
+`finished`、`failed`、`cancelled` 或 `abandoned`）、`processed`、`total`、`failed`、
 `bridge_instance_id` 和时间戳。客户端可用 `xtdata.get_request_status(request_id)`
 读取状态，用 `xtdata.cancel_request(request_id)` 发出协作式取消请求；取消会在每个
 股票处理边界生效，底层 QMT 单只调用阻塞时无法强制中断。

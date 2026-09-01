@@ -31,6 +31,10 @@ class FileBridgeClient:
             "created_at": time.time(),
         }
         atomic_write_json(os.path.join(self.config.root, "requests", filename), payload)
+        atomic_write_json(os.path.join(self.config.root, "status", request_id + ".json"), {
+            "request_id": request_id, "state": "pending", "processed": 0,
+            "total": 0, "failed": 0, "created_at": payload["created_at"],
+        })
         deadline = time.monotonic() + (self.config.timeout if timeout is None else float(timeout))
         try:
             while time.monotonic() < deadline:
@@ -51,7 +55,11 @@ class FileBridgeClient:
                         if result.get("cancelled"):
                             from .exceptions import BridgeCancelledError
                             raise BridgeCancelledError(result.get("error") or "request cancelled")
-                        raise BridgeRemoteError(result.get("error") or "unknown QMT bridge error")
+                        message = result.get("error") or "unknown QMT bridge error"
+                        if "NotImplementedError" in message or "unavailable" in message.lower():
+                            from .exceptions import BridgeMethodNotSupportedError
+                            raise BridgeMethodNotSupportedError(message)
+                        raise BridgeRemoteError(message)
                     return result.get("data")
                 time.sleep(self.config.poll_interval)
         except KeyboardInterrupt:

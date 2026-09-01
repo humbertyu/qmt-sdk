@@ -29,6 +29,27 @@ def _mkdirs():
             os.makedirs(path)
 
 
+def _mark_abandoned_statuses():
+    """A restarted bridge cannot safely resume requests owned by its old instance."""
+    if not os.path.isdir(STATUS):
+        return
+    for name in os.listdir(STATUS):
+        if not name.endswith(".json"):
+            continue
+        path = os.path.join(STATUS, name)
+        try:
+            with open(path, "r", encoding="utf-8") as stream:
+                status = json.load(stream)
+            if status.get("state") in ("pending", "running"):
+                status["state"] = "abandoned"
+                status["previous_bridge_instance_id"] = status.get("bridge_instance_id")
+                status["bridge_instance_id"] = _bridge_instance_id
+                status["updated_at"] = time.time()
+                _atomic_write(path, status)
+        except Exception:
+            continue
+
+
 def _jsonable(value, depth=0):
     if depth > 10:
         return repr(value)
@@ -447,6 +468,7 @@ def _process_one(ContextInfo, name):
 def init(ContextInfo):
     global _scheduled
     _mkdirs()
+    _mark_abandoned_statuses()
     print("[xtquant_compat] started root=%s instance=%s" % (ROOT, _bridge_instance_id))
     if not _scheduled and hasattr(ContextInfo, "run_time"):
         start = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time.time() + 1))
