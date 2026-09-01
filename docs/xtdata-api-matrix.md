@@ -95,4 +95,3 @@ empty data for an unimplemented API.
 | 📋 Planned | 31 |
 | ➖ Different semantics | 1 |
 | Total official functions in reference snapshot | 41 |
-
