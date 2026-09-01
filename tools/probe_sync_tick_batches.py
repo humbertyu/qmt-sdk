@@ -17,6 +17,8 @@ parser.add_argument("--date", default="20260901")
 parser.add_argument("--batch-size", type=int, default=50)
 parser.add_argument("--stocks-file", default=None)
 parser.add_argument("--output", default=None)
+parser.add_argument("--start-index", type=int, default=0,
+                    help="从统一股票列表的指定下标继续，便于长任务断点续跑")
 args = parser.parse_args()
 
 output_root = Path(args.output or (Path(r"D:\Temp") / "xtquant-sync-tick-probe" / args.date))
@@ -34,14 +36,18 @@ else:
     stocks = xtdata.get_stock_list_in_sector("沪深A股")
     (output_root / "stocks.json").write_text(json.dumps(stocks, ensure_ascii=False, indent=2), encoding="utf-8")
 
-manifest = {"backend": args.backend, "period": "tick", "date": args.date,
-            "batch_size": args.batch_size, "stock_count": len(stocks),
-            "stocks": stocks, "batches": []}
+manifest_path = backend_root / "manifest.json"
+if args.start_index and manifest_path.exists():
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+else:
+    manifest = {"backend": args.backend, "period": "tick", "date": args.date,
+                "batch_size": args.batch_size, "stock_count": len(stocks),
+                "stocks": stocks, "batches": []}
 total_started = time.time()
 total_rows = total_symbols = 0
 total_save_seconds = 0.0
 
-for start in range(0, len(stocks), args.batch_size):
+for start in range(args.start_index, len(stocks), args.batch_size):
     batch = stocks[start:start + args.batch_size]
     t = time.time()
     download = xtdata.download_history_data2(batch, "tick", args.date, args.date)
