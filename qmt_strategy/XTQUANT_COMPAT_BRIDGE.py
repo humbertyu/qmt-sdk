@@ -2,6 +2,7 @@
 """Pure-file Big QMT bridge. Keep this script compatible with Python 3.6."""
 import json
 import os
+import pickle
 import time
 import traceback
 import uuid
@@ -81,6 +82,29 @@ def _atomic_write(path, payload):
     except OSError:
         pass
     os.rename(temp, path)
+
+
+def _atomic_write_pickle(path, payload):
+    """Write large QMT results without expanding numpy arrays into JSON lists."""
+    folder = os.path.dirname(path)
+    if not os.path.isdir(folder):
+        os.makedirs(folder)
+    temp = "%s.%s.tmp" % (path, uuid.uuid4().hex)
+    try:
+        with open(temp, "wb") as stream:
+            pickle.dump(payload, stream, protocol=4)
+            stream.flush()
+        try:
+            os.remove(path)
+        except OSError:
+            pass
+        os.rename(temp, path)
+    except Exception:
+        try:
+            os.remove(temp)
+        except OSError:
+            pass
+        raise
 
 
 def _unwrap_one(value):
@@ -458,8 +482,23 @@ def _process_one(ContextInfo, name):
         with open(processing, "r", encoding="utf-8") as stream:
             request = json.load(stream)
         _write_status(request.get("request_id"), "running", 0, 0)
-        data = _jsonable(_handle(ContextInfo, request))
-        result = {"request_id": request.get("request_id"), "ok": True, "data": data}
+        raw_data = _handle(ContextInfo, request)
+        result = {"request_id": request.get("request_id"), "ok": True}
+        # Market data is columnar and can contain millions of scalar values.
+        # Pickle protocol 4 preserves numpy arrays and avoids two full JSON
+        # conversions. Small/control responses retain the inspectable JSON path.
+        if request.get("method") == "get_market_data_ex":
+            binary_name = name + ".pkl"
+            binary_path = os.path.join(RESPONSES, binary_name)
+            try:
+                _atomic_write_pickle(binary_path, raw_data)
+                result["data_format"] = "pickle-v1"
+                result["data_file"] = binary_name
+            except Exception:
+                result["data"] = _jsonable(raw_data)
+                result["data_format"] = "json"
+        else:
+            result["data"] = _jsonable(raw_data)
         _atomic_write(os.path.join(RESPONSES, name), result)
         _write_status(request.get("request_id"), "finished", 1, 1)
     except Exception as exc:

@@ -1,5 +1,6 @@
 import os
 import json
+import pickle
 import threading
 import time
 import uuid
@@ -60,6 +61,17 @@ class FileBridgeClient:
                             from .exceptions import BridgeMethodNotSupportedError
                             raise BridgeMethodNotSupportedError(message)
                         raise BridgeRemoteError(message)
+                    if result.get("data_format") == "pickle-v1":
+                        binary_name = os.path.basename(str(result.get("data_file", "")))
+                        binary_path = os.path.join(self.config.root, "responses", binary_name)
+                        try:
+                            with open(binary_path, "rb") as stream:
+                                return pickle.load(stream)
+                        finally:
+                            try:
+                                os.remove(binary_path)
+                            except OSError:
+                                pass
                     return result.get("data")
                 time.sleep(self.config.poll_interval)
         except KeyboardInterrupt:

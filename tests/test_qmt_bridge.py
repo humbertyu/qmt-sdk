@@ -1,5 +1,6 @@
 import importlib.util
 import json
+import pickle
 from pathlib import Path
 
 
@@ -50,6 +51,15 @@ def test_generic_context_dispatch(monkeypatch, tmp_path):
         "method": "get_sector_list", "params": {}, "client_id": "test-client",
     })
     assert result == ["沪深A股"]
+
+
+def test_large_market_result_pickle_round_trip(monkeypatch, tmp_path):
+    bridge = load_bridge(monkeypatch, tmp_path)
+    target = tmp_path / "responses" / "market.pkl"
+    payload = {"000001.SZ": {"time": [1, 2], "close": [10.0, 10.1]}}
+    bridge._atomic_write_pickle(str(target), payload)
+    with target.open("rb") as stream:
+        assert pickle.load(stream) == payload
 
 
 def test_quote_subscription_writes_native_callback_event(monkeypatch, tmp_path):
