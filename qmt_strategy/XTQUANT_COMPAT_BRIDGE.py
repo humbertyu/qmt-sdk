@@ -453,9 +453,11 @@ def _process_one(ContextInfo, name):
         _atomic_write(os.path.join(RESPONSES, name), result)
         _write_status(request.get("request_id"), "finished", 1, 1)
     except Exception as exc:
+        cancelled = "cancel" in str(exc).lower()
         result = {
             "request_id": request.get("request_id") if request else "",
-            "ok": False, "error": repr(exc), "traceback": traceback.format_exc(),
+            "ok": False, "cancelled": cancelled, "error": repr(exc),
+            "traceback": traceback.format_exc(),
         }
         _atomic_write(os.path.join(ERRORS, name), result)
         _write_status(request.get("request_id"), "cancelled" if "cancel" in str(exc).lower() else "failed", 0, 0, error=repr(exc))
