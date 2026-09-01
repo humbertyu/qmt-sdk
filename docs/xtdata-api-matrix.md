@@ -45,6 +45,45 @@ API surface coverage and behavioral compatibility are intentionally reported sep
 | `unsubscribe_quote` | `subscribe-tick` | ✅ | ⚠️ | 不适用 | 取消订阅有效；返回值语义未确认与原生完全一致。 |
 | `get_full_tick` | 快照轮询 | ✅ | ✅ | ⚠️ | 时间、价格、累计量和盘口核心字段通过；字段全集待确认。 |
 
+## `update-instruments` 全流程性能与结果记录
+
+以下结果来自 2026-09-01、目标日期 `20260831`、相同的
+`update-instruments --dry-run` 命令。两次均不写入 parquet 或 metadata。
+
+| 后端 | 总耗时 | 行数/股票数 | `is_trading` 分布 | 备注 |
+| --- | ---: | ---: | --- | --- |
+| MiniQMT native | 8.90 秒 | 5207 / 5207 | `True: 5201, False: 6` | 原生客户端一次批量行情查询；详情接口官方源码虽为 Python 循环，但底层客户端调用很快。 |
+| Big QMT compat（原 500 只分批） | 52.49 秒 | 5217 / 5217 | `False: 4752, True: 465` | 11 次行情桥接请求；该分批逻辑已移除。 |
+| Big QMT compat（当前单次批量） | 51.92 秒 | 5217 / 5217 | `False: 4752, True: 465` | 行情一次请求约 1.75 秒，主要耗时来自详情逐只调用。 |
+
+### 结果数量差异
+
+Big QMT 的 `沪深A股` 列表为 5217 只，MiniQMT 为 5207 只。多出的 10 只为：
+
+`301655.SZ`, `301688.SZ`, `301689.SZ`, `301697.SZ`, `301699.SZ`,
+`601123.SH`, `688826.SH`, `688828.SH`, `688835.SH`, `688836.SH`。
+
+这些是数据源更新时间差异导致的较新标的，不是兼容层重复、拆分或遗漏；当前策略是保留
+大 QMT 返回的完整集合，不在适配层静默过滤。
+
+### 性能原因定位
+
+MiniQMT 官方 `get_instrument_detail_list` 的 Python 源码确实逐只调用
+`get_instrument_detail`，但这些调用落在 MiniQMT 的本地客户端/服务和缓存路径上；5219 只
+实测约 2.34 秒。Big QMT 侧没有等价的批量详情接口，桥接只能在策略进程内循环调用
+`ContextInfo.get_instrument_detail`；5217 次调用约占 compat 全流程的 50 秒。文件桥接已
+做到外部一次请求，无法消除 QMT 策略 API 每次调用本身的开销。
+
+### 可复现命令
+
+```powershell
+python cli/cli.py update-instruments --date 20260831 --dry-run
+python cli/cli.py update-instruments --date 20260831 --backend compat --dry-run
+```
+
+单独测量底层阶段时，应分别记录 `get_market_data(['amount'], 全市场, '1d', ...)` 和
+`get_instrument_detail_list(全市场)` 的耗时，不能只看总流程时间。
+
 ## 已验证接口的逐字段记录
 
 ### `get_stock_list_in_sector`
@@ -217,7 +256,7 @@ MiniQMT 完全等价。
 | `get_holidays()` | 🧪 | Environment-dependent adapter; real-QMT verification pending. |
 | `get_index_weight(index_code)` | 🧪 | Environment-dependent adapter; real-QMT verification pending. |
 | `get_instrument_detail(stock_code, iscomplete=False)` | ⚠️ | All 31 native fields passed for one stock; the result retains four Big QMT-only fields and other instrument types remain pending. |
-| `get_instrument_detail_list(stock_list, iscomplete=False)` | 🧪 | Environment-dependent adapter; real-QMT verification pending. |
+| `get_instrument_detail_list(stock_list, iscomplete=False)` | ⚠️ | Batch shape verified for 2/50/500 stocks and full 5217-stock workflow; fields are normalized per item. Big QMT internally performs one-by-one detail calls and is materially slower than MiniQMT. |
 | `get_instrument_type(stock_code, variety_list=None)` | 🧪 | Environment-dependent adapter; real-QMT verification pending. |
 | `get_ipo_info(start_time='', end_time='')` | 🧪 | Environment-dependent adapter; real-QMT verification pending. |
 | `get_kline_trading_period(stock_code)` | 🧪 | Environment-dependent adapter; real-QMT verification pending. |
