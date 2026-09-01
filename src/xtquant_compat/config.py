@@ -5,7 +5,9 @@ from dataclasses import dataclass, replace
 
 @dataclass(frozen=True)
 class Config:
-    root: str = os.environ.get("XTQUANT_COMPAT_ROOT", r"D:\FinTools\QMT\file_bridge")
+    root: str = os.environ.get(
+        "XTQUANT_COMPAT_ROOT", r"D:\FinTools\QMT\xtquant_compat_bridge",
+    )
     timeout: float = float(os.environ.get("XTQUANT_COMPAT_TIMEOUT", "30"))
     poll_interval: float = float(os.environ.get("XTQUANT_COMPAT_POLL_INTERVAL", "0.05"))
 
