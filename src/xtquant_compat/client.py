@@ -16,7 +16,7 @@ class FileBridgeClient:
         self._callbacks = {}
         self._stop = threading.Event()
         self._event_thread = None
-        for name in ("requests", "responses", "errors", "events", "processed"):
+        for name in ("requests", "responses", "errors", "events", "processed", "cancellations"):
             os.makedirs(os.path.join(config.root, name), exist_ok=True)
 
     def request(self, method, params=None, timeout=None):
@@ -38,8 +38,6 @@ class FileBridgeClient:
                 if not os.path.exists(path):
                     continue
                 try:
-                    # Windows may briefly deny a response while QMT is
-                    # finishing the atomic publish/close sequence.
                     result = read_json(path)
                 except (OSError, ValueError, json.JSONDecodeError):
                     time.sleep(min(self.config.poll_interval, 0.05))
@@ -52,7 +50,13 @@ class FileBridgeClient:
                     raise BridgeRemoteError(result.get("error") or "unknown QMT bridge error")
                 return result.get("data")
             time.sleep(self.config.poll_interval)
+        self.cancel(request_id)
         raise BridgeTimeoutError("timeout waiting for %s (%s)" % (method, request_id))
+
+    def cancel(self, request_id):
+        atomic_write_json(os.path.join(self.config.root, "cancellations", request_id + ".json"), {
+            "request_id": request_id, "created_at": time.time(),
+        })
 
     def subscribe_method(self, method, params, callback):
         result = self.request(method, params)

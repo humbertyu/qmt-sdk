@@ -198,6 +198,16 @@ def get_instrumentdetail(stock_code):
     return get_instrument_detail(stock_code)
 
 
+def get_instrument_detail_list(stock_list, iscomplete=False):
+    client = get_client()
+    result = client.request(
+        "get_instrument_detail_list",
+        {"stock_list": list(stock_list), "iscomplete": bool(iscomplete)},
+        timeout=max(client.config.timeout, 300),
+    )
+    return result if isinstance(result, dict) else {}
+
+
 def get_instrument_type(stock_code, variety_list=None):
     return _request("get_instrument_type", stock_code=stock_code, variety_list=variety_list)
 

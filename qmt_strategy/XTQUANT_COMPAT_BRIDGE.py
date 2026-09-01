@@ -11,6 +11,7 @@ REQUESTS = os.path.join(ROOT, "requests")
 PROCESSING = os.path.join(ROOT, "processing")
 RESPONSES = os.path.join(ROOT, "responses")
 ERRORS = os.path.join(ROOT, "errors")
+CANCELLATIONS = os.path.join(ROOT, "cancellations")
 EVENTS = os.path.join(ROOT, "events")
 PROTOCOL_VERSION = 1
 
@@ -22,7 +23,7 @@ _bridge_instance_id = uuid.uuid4().hex
 
 
 def _mkdirs():
-    for path in (REQUESTS, PROCESSING, RESPONSES, ERRORS, EVENTS):
+    for path in (REQUESTS, PROCESSING, RESPONSES, ERRORS, EVENTS, CANCELLATIONS):
         if not os.path.isdir(path):
             os.makedirs(path)
 
@@ -263,6 +264,27 @@ def _download_history(params):
     return results
 
 
+def _cancelled(request_id):
+    path = os.path.join(CANCELLATIONS, str(request_id) + ".json")
+    if not os.path.exists(path):
+        return False
+    try:
+        os.remove(path)
+    except OSError:
+        pass
+    return True
+
+
+def _instrument_detail_list(ContextInfo, request):
+    params = request.get("params") or {}
+    result = {}
+    for stock in params.get("stock_list", []):
+        if _cancelled(request.get("request_id")):
+            raise RuntimeError("request cancelled")
+        result[stock] = ContextInfo.get_instrument_detail(stock)
+    return result
+
+
 def _handle(ContextInfo, request):
     method = request.get("method")
     params = request.get("params") or {}
@@ -281,6 +303,8 @@ def _handle(ContextInfo, request):
         return _get_market_data(ContextInfo, params)
     if method == "get_instrument_detail":
         return ContextInfo.get_instrument_detail(params.get("stock_code", ""))
+    if method == "get_instrument_detail_list":
+        return _instrument_detail_list(ContextInfo, request)
     if method == "get_stock_list_in_sector":
         get_sector = getattr(ContextInfo, "get_stock_list_in_sector", None)
         if not callable(get_sector):
