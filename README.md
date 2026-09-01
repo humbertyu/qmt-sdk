@@ -52,20 +52,15 @@ Legend: ✅ verified; ⚠️ usable with a documented difference; ⏳ pending.
 | `subscribe_quote` (`tick`) | `subscribe-tick` | ✅ | ✅ | ✅ | Native callback shape and quote timestamps verified. |
 | `unsubscribe_quote` | `subscribe-tick` | ✅ | ✅ | ✅ | Real Big QMT unsubscribe verified. |
 | `download_history_data2` (`tick`) | `sync-auto`, `sync-tick-redis` | ✅ | ✅ | ✅ | Two-stock download verified, including data after 15:00. |
-| `get_market_data_ex` (`tick`) | `sync-auto`, `sync-tick-redis` | ✅ | ✅ | ⚠️ | All 4,915 timestamps and core fields match; see field differences below. |
+| `get_market_data_ex` (`tick`) | `sync-auto`, `sync-tick-redis` | ✅ | ✅ | ⚠️ | All 4,915 timestamps and core fields match; see the [Tick compatibility report](docs/tick-compatibility.md). |
 | `get_full_tick` | Snapshot/polling | ✅ | ✅ | ✅ | Current three-second quote snapshot verified. |
 | `bridge_status` | Diagnostics | ✅ | N/A | N/A | Project extension API. |
 
 The retained acceptance tools are `tools/capture_workflow_fixture.py`,
 `tools/compare_workflow_fixtures.py`, and `tools/probe_subscription.py`.
 
-For the tested `000779.SZ` trading day, Big QMT and the existing MiniQMT-derived
-store had all 4,915 tick timestamps in common, including `15:30:00.001`. Prices,
-volume, order-book volume, and transaction count matched (apart from floating-point
-representation); `amount` differed by at most one currency unit. Historical Big QMT
-payloads did not reproduce native `stockStatus`, `pvolume`, or `tickvol` exactly.
-These remain documented deviations: missing structural fields use neutral placeholders
-and must not be treated as data-equivalent to native values.
+Detailed Tick sample results, field-level differences, and usage guidance are maintained
+in the [Tick compatibility report](docs/tick-compatibility.md).
 
 Unsupported APIs will not be silently emulated. Compatibility details belong in
 [`docs/compatibility.md`](docs/compatibility.md).

@@ -52,18 +52,15 @@ QMT 环境适配，不面向订单簿或逐笔级高频交易。
 | `subscribe_quote`（`tick`） | `subscribe-tick` | ✅ | ✅ | ✅ | MiniQMT 回调结构和行情时间戳已验证。 |
 | `unsubscribe_quote` | `subscribe-tick` | ✅ | ✅ | ✅ | 已通过真实大 QMT 取消订阅验证。 |
 | `download_history_data2`（`tick`） | `sync-auto`、`sync-tick-redis` | ✅ | ✅ | ✅ | 已验证两只股票，包含 15:00 后的数据。 |
-| `get_market_data_ex`（`tick`） | `sync-auto`、`sync-tick-redis` | ✅ | ✅ | ⚠️ | 4915 个时间戳和核心字段一致；字段差异见下文。 |
+| `get_market_data_ex`（`tick`） | `sync-auto`、`sync-tick-redis` | ✅ | ✅ | ⚠️ | 4915 个时间戳和核心字段一致；详见 [Tick 兼容性报告](docs/tick-compatibility.zh-CN.md)。 |
 | `get_full_tick` | 快照轮询 | ✅ | ✅ | ✅ | 当前三秒行情快照已验证。 |
 | `bridge_status` | 诊断 | ✅ | 不适用 | 不适用 | 项目扩展 API。 |
 
 仓库保留了可重复验收工具：`tools/capture_workflow_fixture.py`、
 `tools/compare_workflow_fixtures.py` 和 `tools/probe_subscription.py`。
 
-在已测的 `000779.SZ` 交易日中，大 QMT 与现有 MiniQMT 业务数据的 4915 个
-Tick 时间戳全部一致，包含 `15:30:00.001`。价格、成交量、盘口量和成交笔数一致
-（仅有浮点尾差），`amount` 最大相差 1 元。大 QMT 历史结果中的 `stockStatus`、
-`pvolume`、`tickvol` 尚不能与原生值完全一致；项目将其明确列为已知差异。缺失的
-结构字段会使用中性占位值，调用方不能将这些占位值视作与原生数据等价。
+Tick 样本结果、逐字段差异和使用建议统一维护在
+[Tick 兼容性报告](docs/tick-compatibility.zh-CN.md) 中。
 
 未支持的 API 不会被静默模拟。兼容性细节见
 [`docs/compatibility.md`](docs/compatibility.md)。
