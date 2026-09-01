@@ -45,6 +45,7 @@ print("backend", args.backend, "stocks", len(stocks), "batch_size", args.batch_s
 total_started = time.time()
 total_rows = 0
 total_symbols = 0
+total_save_seconds = 0.0
 manifest = {
     "backend": args.backend,
     "date": args.date,
@@ -102,17 +103,21 @@ for start in range(0, len(stocks), args.batch_size):
     query_seconds = time.time() - started
     # Each symbol is written as a production-shaped parquet directly under the
     # isolated backend directory.  The manifest retains batch boundaries.
+    save_started = time.time()
     saved_symbols = save_frames(data, batch, backend_root)
+    save_seconds = time.time() - save_started
     rows = sum(len(frame) for frame in data.values() if isinstance(frame, pd.DataFrame))
     symbols = sum(1 for frame in data.values() if isinstance(frame, pd.DataFrame) and not frame.empty)
     total_rows += rows
     total_symbols += symbols
+    total_save_seconds += save_seconds
     manifest["batches"].append({
         "start": start,
         "end": start + len(batch),
         "stock_count": len(batch),
         "download_seconds": download_seconds,
         "query_seconds": query_seconds,
+        "save_seconds": save_seconds,
         "rows": rows,
         "symbols": symbols,
         "saved_symbols": saved_symbols,
@@ -124,4 +129,5 @@ for start in range(0, len(stocks), args.batch_size):
           "query=%.3f" % query_seconds, "rows", rows, "symbols", symbols,
           "result_type", type(download).__name__, flush=True)
 print("TOTAL seconds=%.3f" % (time.time() - total_started), "rows", total_rows,
-      "symbols", total_symbols, "output", backend_root, flush=True)
+      "symbols", total_symbols, "save_seconds=%.3f" % total_save_seconds,
+      "output", backend_root, flush=True)
