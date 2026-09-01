@@ -27,8 +27,6 @@ workflow mappings, return-shape checks, field-level differences, numeric toleran
 known limitations, and retained reproduction tools.
 The step-by-step checklist for adding another API is in the
 [API implementation standard](docs/api-implementation-standard.md).
-The transport design comparison with cfquant is recorded in
-[architecture-comparison-cfquant.md](docs/architecture-comparison-cfquant.md).
 
 Unsupported or unverified APIs are marked explicitly and are not silently claimed as
 compatible.
