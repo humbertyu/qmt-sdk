@@ -44,3 +44,11 @@ def test_sync_auto_download_contract(monkeypatch):
     assert result == {"000001.SZ": True}
     assert progress == [{"finished": 1, "result": result}]
     assert client.calls[-1][2] == 600
+
+
+def test_async_download_job_lifecycle(monkeypatch):
+    monkeypatch.setattr(xtdata, "download_history_data", lambda *args: {"ok": True})
+    job_id = xtdata.submit_download_history_data("000001.SZ", "1d")
+    status = xtdata.wait_download(job_id, timeout=2, poll_interval=0.01)
+    assert status["status"] == "finished"
+    assert status["result"] == {"ok": True}

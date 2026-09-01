@@ -47,23 +47,29 @@ class FileBridgeClient:
             time.sleep(self.config.poll_interval)
         raise BridgeTimeoutError("timeout waiting for %s (%s)" % (method, request_id))
 
-    def subscribe(self, stock_code, period, start_time, end_time, count, callback):
-        result = self.request("subscribe_quote", {
-            "stock_code": stock_code,
-            "period": period,
-            "start_time": start_time,
-            "end_time": end_time,
-            "count": count,
-        })
+    def subscribe_method(self, method, params, callback):
+        result = self.request(method, params)
         subscription_id = result.get("subscription_id") if isinstance(result, dict) else result
         if callback is not None:
             self._callbacks[str(subscription_id)] = callback
             self._ensure_event_thread()
         return subscription_id
 
+    def subscribe(self, stock_code, period, start_time, end_time, count, callback):
+        return self.subscribe_method("subscribe_quote", {
+            "stock_code": stock_code,
+            "period": period,
+            "start_time": start_time,
+            "end_time": end_time,
+            "count": count,
+        }, callback)
+
     def unsubscribe(self, subscription_id):
+        return self.unsubscribe_method("unsubscribe_quote", subscription_id)
+
+    def unsubscribe_method(self, method, subscription_id, parameter="subscription_id"):
         self._callbacks.pop(str(subscription_id), None)
-        return self.request("unsubscribe_quote", {"subscription_id": subscription_id})
+        return self.request(method, {parameter: subscription_id})
 
     def _ensure_event_thread(self):
         if self._event_thread and self._event_thread.is_alive():

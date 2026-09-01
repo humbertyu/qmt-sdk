@@ -86,6 +86,21 @@ def _raw_context(ContextInfo):
     return getattr(ContextInfo, "context", None)
 
 
+def _call_available(ContextInfo, names, args):
+    if isinstance(names, str):
+        names = (names,)
+    objects = (_raw_context(ContextInfo), ContextInfo)
+    for name in names:
+        injected = globals().get(name)
+        if callable(injected):
+            return injected(*args)
+        for obj in objects:
+            function = getattr(obj, name, None) if obj is not None else None
+            if callable(function):
+                return function(*args)
+    raise NotImplementedError("QMT callable unavailable: %s" % ", ".join(names))
+
+
 def _get_market_data(ContextInfo, params):
     fields = params.get("field_list", [])
     stocks = params.get("stock_list", [])
@@ -150,6 +165,79 @@ def _unsubscribe(ContextInfo, params):
     return True
 
 
+def _subscribe_whole(ContextInfo, request, params):
+    global _next_subscription_id
+    client_id = request.get("client_id") or "anonymous"
+    code_list = params.get("code_list", [])
+    subscription_id = _next_subscription_id
+    _next_subscription_id += 1
+    state = {
+        "client_id": client_id, "stock_code": "*", "sequence": 0,
+        "qmt_sequence": None, "callback": None,
+    }
+
+    def on_quote(raw):
+        state["sequence"] += 1
+        sequence = state["sequence"]
+        path = os.path.join(
+            EVENTS, client_id, str(subscription_id), "%020d.json" % sequence,
+        )
+        _atomic_write(path, {
+            "protocol_version": PROTOCOL_VERSION,
+            "bridge_instance_id": _bridge_instance_id,
+            "subscription_id": subscription_id,
+            "sequence": sequence,
+            "created_at": time.time(),
+            "data": _jsonable(raw),
+        })
+
+    qmt_sequence = _call_available(
+        ContextInfo, "subscribe_whole_quote", (code_list, on_quote),
+    )
+    state["qmt_sequence"] = qmt_sequence
+    state["callback"] = on_quote
+    _subscriptions[subscription_id] = state
+    return {"subscription_id": subscription_id, "qmt_sequence": qmt_sequence}
+
+
+def _subscribe_formula(ContextInfo, request, params):
+    global _next_subscription_id
+    client_id = request.get("client_id") or "anonymous"
+    subscription_id = _next_subscription_id
+    _next_subscription_id += 1
+    state = {
+        "client_id": client_id, "stock_code": params.get("stock_code", ""),
+        "sequence": 0, "qmt_sequence": None, "callback": None,
+    }
+
+    def on_formula(raw):
+        state["sequence"] += 1
+        sequence = state["sequence"]
+        path = os.path.join(
+            EVENTS, client_id, str(subscription_id), "%020d.json" % sequence,
+        )
+        _atomic_write(path, {
+            "protocol_version": PROTOCOL_VERSION,
+            "bridge_instance_id": _bridge_instance_id,
+            "subscription_id": subscription_id,
+            "sequence": sequence,
+            "created_at": time.time(),
+            "data": _jsonable(raw),
+        })
+
+    args = (
+        params.get("formula_name"), params.get("stock_code"), params.get("period"),
+        params.get("start_time", ""), params.get("end_time", ""),
+        params.get("count", -1), params.get("dividend_type"),
+        params.get("extend_param", {}), on_formula,
+    )
+    qmt_sequence = _call_available(ContextInfo, "subscribe_formula", args)
+    state["qmt_sequence"] = qmt_sequence
+    state["callback"] = on_formula
+    _subscriptions[subscription_id] = state
+    return {"subscription_id": subscription_id, "qmt_sequence": qmt_sequence}
+
+
 def _download_history(params):
     download = globals().get("down_history_data")
     if not callable(download):
@@ -185,16 +273,55 @@ def _handle(ContextInfo, request):
         get_sector = getattr(ContextInfo, "get_stock_list_in_sector", None)
         if not callable(get_sector):
             context = _raw_context(ContextInfo)
-            get_sector = getattr(context, "get_stock_list_in_sector", None) if context else None
+            get_sector = getattr(context, "get_stock_list_in_sector", None) if context is not None else None
         if not callable(get_sector):
             raise NotImplementedError("get_stock_list_in_sector unavailable")
         return get_sector(params.get("sector_name", ""))
     if method == "subscribe_quote":
         return _subscribe(ContextInfo, request, params)
+    if method == "subscribe_quote2":
+        return _subscribe(ContextInfo, request, params)
+    if method == "subscribe_whole_quote":
+        return _subscribe_whole(ContextInfo, request, params)
     if method == "unsubscribe_quote":
         return _unsubscribe(ContextInfo, params)
+    if method == "subscribe_formula":
+        return _subscribe_formula(ContextInfo, request, params)
+    if method == "unsubscribe_formula":
+        formula_id = params.get("request_id")
+        state = _subscriptions.pop(int(formula_id), None)
+        qmt_id = state.get("qmt_sequence") if state else formula_id
+        return _call_available(ContextInfo, "unsubscribe_formula", (qmt_id,))
     if method == "download_history_data2":
         return _download_history(params)
+    if method == "get_local_data":
+        return _get_market_data(ContextInfo, params)
+
+    simple_calls = {
+        "get_instrument_type": (("get_instrument_type",), (params.get("stock_code"), params.get("variety_list"))),
+        "get_stock_type": (("get_stock_type",), (params.get("stock"),)),
+        "get_sector_info": (("get_sector_info",), (params.get("sector_name", ""),)),
+        "get_sector_list": (("get_sector_list",), ()),
+        "get_trading_dates": (("get_trading_dates",), (params.get("market"), params.get("start_time", ""), params.get("end_time", ""), params.get("count", -1))),
+        "get_holidays": (("get_holidays",), ()),
+        "download_holiday_data": (("download_holiday_data",), (params.get("incrementally", True),)),
+        "get_ipo_info": (("get_ipo_info",), (params.get("start_time", ""), params.get("end_time", ""))),
+        "get_divid_factors": (("get_divid_factors", "getDividFactors"), (params.get("stock_code"), params.get("start_time", ""), params.get("end_time", ""))),
+        "get_financial_data": (("get_financial_data",), (params.get("stock_list", []), params.get("table_list", []), params.get("start_time", ""), params.get("end_time", ""), params.get("report_type", "report_time"))),
+        "download_financial_data": (("download_financial_data",), (params.get("stock_list", []), params.get("table_list", []), params.get("start_time", ""), params.get("end_time", ""), params.get("incrementally"))),
+        "download_financial_data2": (("download_financial_data2", "download_financial_data"), (params.get("stock_list", []), params.get("table_list", []), params.get("start_time", ""), params.get("end_time", ""))),
+        "get_etf_info": (("get_etf_info",), ()),
+        "download_etf_info": (("download_etf_info",), ()),
+        "get_option_list": (("get_option_list",), (params.get("undl_code"), params.get("dedate"), params.get("opttype", ""), params.get("isavailavle", False))),
+        "get_his_option_list": (("get_his_option_list",), (params.get("undl_code"), params.get("dedate"))),
+        "get_his_option_list_batch": (("get_his_option_list_batch",), (params.get("undl_code"), params.get("start_time", ""), params.get("end_time", ""))),
+        "call_formula": (("call_formula",), (params.get("formula_name"), params.get("stock_code"), params.get("period"), params.get("start_time", ""), params.get("end_time", ""), params.get("count", -1), params.get("dividend_type"), params.get("extend_param", {}))),
+        "get_formula_result": (("get_formula_result",), (params.get("request_id"), params.get("start_time", ""), params.get("end_time", ""), params.get("count", -1), params.get("timeout_second", -1))),
+        "gen_factor_index": (("gen_factor_index",), (params.get("data_name"), params.get("formula_name"), params.get("vars"), params.get("sector_list"), params.get("start_time", ""), params.get("end_time", ""), params.get("period", "1d"), params.get("dividend_type", "none"))),
+    }
+    if method in simple_calls:
+        names, args = simple_calls[method]
+        return _call_available(ContextInfo, names, args)
     raise ValueError("unsupported method: %s" % method)
 
 

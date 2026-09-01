@@ -23,13 +23,14 @@ workloads, recovery, and portability rather than order-book or transaction-level
 
 The compatibility target is derived from the public functions exposed by an installed official
 `xtquant.xtdata`, rather than an invented project-specific API. The current reference snapshot
-contains 41 public functions.
+contains 41 public functions. All 41 now have matching public names and signatures; behavioral
+verification against real Big QMT environments is tracked separately.
 
 | Status | Count |
 | --- | ---: |
-| Implemented | 7 |
-| Experimental | 2 |
-| Planned | 31 |
+| Public API surface | 41 / 41 |
+| Behavior verified | 7 |
+| Adapter implemented, verification pending | 33 |
 | Different MiniQMT-local semantics | 1 |
 
 See the complete table of official names, signatures, status, and known differences in

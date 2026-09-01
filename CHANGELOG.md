@@ -10,3 +10,6 @@
   `get_stock_list_in_sector`, plus a longer full-market download timeout.
 - Added a 41-function compatibility matrix generated from an installed official
   `xtquant.xtdata` API snapshot.
+- Completed the 41-function public API surface with matching names and signatures.
+- Added generic ContextInfo adapters, durable whole-quote/formula event routing, and
+  process-local asynchronous history-download job lifecycle compatibility.
