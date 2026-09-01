@@ -56,6 +56,9 @@ API surface coverage and behavioral compatibility are intentionally reported sep
 | MiniQMT 集合覆盖 | 5207 | 5207 | MiniQMT 中的代码全部存在于大 QMT 结果 |
 | 大 QMT 新增代码 | 无 | `301655.SZ`, `301688.SZ`, `301689.SZ`, `301697.SZ`, `301699.SZ`, `601123.SH`, `688826.SH`, `688828.SH`, `688835.SH`, `688836.SH` | 数据源更新时间差异，不应强行过滤 |
 
+边界验收（2026-09-01）：空 sector 和未知 sector 均返回空 `list`；`沪深A股` 返回 5217
+项且无重复，首尾顺序稳定于本次运行。其他板块名称和跨重启顺序尚未承诺。
+
 ### `get_instrument_detail`
 
 验证样本为 `000779.SZ`。兼容结果包含原生 MiniQMT 的全部 31 个字段。
@@ -128,6 +131,25 @@ MiniQMT 官方实现的 Python 源码同样是逐只循环，但 5219 只实测�
 | `get_market_data_ex` / `1m` | `dict[symbol, DataFrame]`；241 行 | `open, high, low, close, volume, amount` | 14 位字符串时间索引、列顺序和 dtype 一致 | volume 精确一致；价格最大差 `1.7763568394002505e-15`；amount 最大差 `7.450580596923828e-09` |
 
 上述差异属于浮点表示尾差，在当前样本中没有业务数值差异。
+
+#### 批量与边界验收（`get_market_data`）
+
+2026-09-01 使用 `amount`、`1d`、`20260831` 验证：2 只返回形状 `(2, 1)`，全市场 5217
+只返回 `(5217, 1)`，一次请求约 2.26 秒；空股票列表、无数据日期和 `count=1` 均正常
+返回字段字典，不抛异常。接口本身的结构和调用语义通过，但“无数据”场景的 DataFrame
+是否应为空、以及 `fill_data`/`dividend_type` 的全部组合仍需按 MiniQMT 逐项确认。
+
+#### 对 `update-instruments` 的迁移结论
+
+兼容库层面的两个 API 已满足调用和结构要求，但不能仅凭此宣布业务迁移完成。使用相同
+目标日期 `20260831` 的全市场结果中，MiniQMT 的 `amount` 推导交易状态为
+`True: 5201, False: 6`，Big QMT 为 `True: 465, False: 4752`。这不是结构问题，而是
+Big QMT 目标日期全市场历史缓存/数据可见范围与 MiniQMT 不一致；若直接迁移，
+`is_trading` 等业务字段会发生实质错误。
+
+结论：`update-instruments` 当前具备“技术链路可迁移、可做只读 dry-run”的条件，尚不具备
+“结果无需复核即可替换 MiniQMT 生产流程”的条件。必须先解决或明确补齐 Big QMT 目标日
+全市场历史数据，再进行最终迁移验收。
 
 ### `get_market_data_ex`（tick）
 
