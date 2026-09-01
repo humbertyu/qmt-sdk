@@ -228,6 +228,19 @@ MiniQMT 完全等价。
 | `1m` | 0.146 秒 | 0.175 秒 | 241 | ✅ `get_market_data_ex` 可读 |
 | `tick` | 0.637 秒 | 4.132 秒 | 4915 | ✅ `get_market_data_ex` 可读 |
 
+#### 重复运行性能复测
+
+为排除首次调用/缓存预热影响，单进程连续运行 5 次同一股票、同一日期的完整链路：
+
+| 周期 | MiniQMT 5 次耗时范围/平均 | compat 5 次耗时范围/平均 | 行数 |
+| --- | --- | --- | ---: |
+| `1d` | 0.059–0.938 秒 / 0.250 秒 | 0.167–0.373 秒 / 0.276 秒 | 1 |
+| `1m` | 0.070–0.140 秒 / 0.085 秒 | 0.164–0.277 秒 / 0.221 秒 | 241 |
+| `tick` | 0.213–0.332 秒 / 0.276 秒 | 0.479–0.816 秒 / 0.684 秒 | 4915 |
+
+此前 compat tick 的 4.132 秒是冷启动/桥接首次处理的异常高值；连续运行后稳定在约
+0.5–0.8 秒，仍约为 MiniQMT 的 2.5 倍，主要成本是 JSON 文件传输和 DataFrame 重建。
+
 两边的签名均为 `download_history_data(stock_code, period, start_time='', end_time='',
 incrementally=None)`。MiniQMT 返回 `None`；compat 返回 `{stock_code: True}`，表示 Big
 QMT 的 `down_history_data` 逐项完成结果。这是返回值差异，不影响下载后数据读取；tick
