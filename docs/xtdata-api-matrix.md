@@ -214,6 +214,39 @@ MiniQMT 完全等价。
 | MiniQMT 严格回调对照 | 原生 `download_history_data2(tick)` 探针超过 90 秒未返回且无回调，已中止 | ⚠️ 不能据此声明回调字段和时序完全等价 |
 | 批量规模 | 已测 2 只股票 | 全市场负载、超时和磁盘容量尚未验证 |
 
+### `download_history_data`
+
+这是 MiniQMT 的单股票入口，兼容层保持同名签名，并委托到批量入口；QMT 桥接内部再将
+每只股票映射为 `down_history_data(stock, period, start_time, end_time)`。因此调用方不需要
+知道 Big QMT 没有同名 `xtdata.download_history_data`。
+
+#### 单股票联动验收（`000779.SZ`，20260901）
+
+| 周期 | MiniQMT 总耗时 | compat 总耗时 | 下载后行数 | 数据读取 |
+| --- | ---: | ---: | ---: | --- |
+| `1d` | 0.962 秒 | 0.437 秒 | 1 | ✅ `get_market_data_ex` 可读 |
+| `1m` | 0.146 秒 | 0.175 秒 | 241 | ✅ `get_market_data_ex` 可读 |
+| `tick` | 0.637 秒 | 4.132 秒 | 4915 | ✅ `get_market_data_ex` 可读 |
+
+两边的签名均为 `download_history_data(stock_code, period, start_time='', end_time='',
+incrementally=None)`。MiniQMT 返回 `None`；compat 返回 `{stock_code: True}`，表示 Big
+QMT 的 `down_history_data` 逐项完成结果。这是返回值差异，不影响下载后数据读取；tick
+字段差异仍按 `get_market_data_ex` tick 专节记录。
+
+#### 与 `get_market_data_ex` 的标准联动验收
+
+在相同环境、股票 `000779.SZ`、日期 `20260901` 下，按“下载后查询”的调用顺序分别测量：
+
+| 周期 | MiniQMT 下载 | MiniQMT 查询 | compat 下载 | compat 查询 | 返回行数 |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| `1d` | 0.160 秒 | 0.769 秒 | 0.419 秒 | 0.139 秒 | 1 |
+| `1m` | 0.105 秒 | 0.065 秒 | 0.219 秒 | 0.158 秒 | 241 |
+| `tick` | 0.111 秒 | 0.078 秒 | 0.475 秒 | 0.587 秒 | 4915 |
+
+三种周期均收到 1 次完成回调；compat 返回结果为 `{stock: True}`，MiniQMT 返回 `{}`，
+这是底层下载函数返回值语义差异，不影响下载完成。`1d`、`1m` 的结构和核心数值已通过
+fixture 对照；tick 的行数、时间戳和核心字段已通过，字段差异见 tick 专节。
+
 ### `get_full_tick`
 
 | 项目 | 当前结论 |
@@ -228,6 +261,7 @@ MiniQMT 完全等价。
 - `tools/capture_workflow_fixture.py`：分别在 MiniQMT 与兼容环境生成标准化快照。
 - `tools/compare_workflow_fixtures.py`：比较结构、索引、dtype 和记录。
 - `tools/probe_subscription.py`：验证订阅回调、间隔和取消订阅。
+- `tools/probe_market_data_ex.py`：按周期测量 `download_history_data2` 与 `get_market_data_ex` 联动。
 
 ## 完整 138 接口矩阵
 
