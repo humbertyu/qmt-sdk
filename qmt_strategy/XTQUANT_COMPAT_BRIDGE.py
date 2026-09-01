@@ -295,19 +295,25 @@ def _write_status(request_id, state, processed=0, total=0, failed=0, error=None)
 
 
 def _download_history(params, request_id=None):
-    download = globals().get("down_history_data")
-    if not callable(download):
-        raise NotImplementedError("QMT global down_history_data unavailable")
-    results = {}
     stocks = params.get("stock_list", [])
+    period = params.get("period", "1d")
+    start_time = params.get("start_time", "")
+    end_time = params.get("end_time", "")
+    batch_download = globals().get("download_history_data2")
+    if callable(batch_download):
+        _write_status(request_id, "running", 0, len(stocks))
+        result = batch_download(stocks, period, start_time, end_time)
+        _write_status(request_id, "running", len(stocks), len(stocks))
+        return result
+    download = globals().get("download_history_data") or globals().get("down_history_data")
+    if not callable(download):
+        raise NotImplementedError("QMT batch/single history download unavailable")
+    results = {}
     for index, stock in enumerate(stocks, 1):
         if _cancelled(request_id):
             raise RuntimeError("request cancelled")
         _write_status(request_id, "running", index - 1, len(stocks))
-        results[stock] = download(
-            stock, params.get("period", "1d"),
-            params.get("start_time", ""), params.get("end_time", ""),
-        )
+        results[stock] = download(stock, period, start_time, end_time)
     return results
 
 
@@ -343,6 +349,10 @@ def _handle(ContextInfo, request):
             "protocol_version": PROTOCOL_VERSION,
             "bridge_instance_id": _bridge_instance_id,
             "subscriptions": len(_subscriptions),
+            "download_capabilities": {
+                name: callable(globals().get(name))
+                for name in ("download_history_data2", "download_history_data", "down_history_data")
+            },
             "time": time.time(),
         }
     if method == "get_full_tick":
