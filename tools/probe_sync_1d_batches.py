@@ -7,12 +7,13 @@ import pandas as pd
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--backend", choices=("native", "compat"), required=True)
+parser.add_argument("--period", choices=("1d", "1m"), default="1d")
 parser.add_argument("--date", default="20260901")
 parser.add_argument("--batch-size", type=int, default=1000)
 parser.add_argument(
     "--output",
     default=None,
-    help="独立输出根目录；默认 D:\\Temp\\xtquant-sync-1d-probe\\<date>",
+    help="独立输出根目录；默认 D:\\Temp\\xtquant-sync-<period>-probe\\<date>",
 )
 parser.add_argument(
     "--stocks-file",
@@ -21,7 +22,7 @@ parser.add_argument(
 )
 args = parser.parse_args()
 
-output_root = Path(args.output or (Path(r"D:\Temp\xtquant-sync-1d-probe") / args.date))
+output_root = Path(args.output or (Path(r"D:\Temp") / f"xtquant-sync-{args.period}-probe" / args.date))
 backend_root = output_root / args.backend
 backend_root.mkdir(parents=True, exist_ok=True)
 
@@ -41,13 +42,14 @@ else:
     (output_root / "stocks.json").write_text(
         json.dumps(stocks, ensure_ascii=False, indent=2), encoding="utf-8"
     )
-print("backend", args.backend, "stocks", len(stocks), "batch_size", args.batch_size, flush=True)
+print("backend", args.backend, "period", args.period, "stocks", len(stocks), "batch_size", args.batch_size, flush=True)
 total_started = time.time()
 total_rows = 0
 total_symbols = 0
 total_save_seconds = 0.0
 manifest = {
     "backend": args.backend,
+    "period": args.period,
     "date": args.date,
     "batch_size": args.batch_size,
     "stock_count": len(stocks),
@@ -93,12 +95,12 @@ def save_frames(data, batch, target_root):
 for start in range(0, len(stocks), args.batch_size):
     batch = stocks[start:start + args.batch_size]
     started = time.time()
-    download = xtdata.download_history_data2(batch, "1d", args.date, args.date)
+    download = xtdata.download_history_data2(batch, args.period, args.date, args.date)
     download_seconds = time.time() - started
     started = time.time()
     data = xtdata.get_market_data_ex(
         ["open", "high", "low", "close", "volume", "amount"],
-        batch, "1d", args.date, args.date,
+        batch, args.period, args.date, args.date,
     )
     query_seconds = time.time() - started
     # Each symbol is written as a production-shaped parquet directly under the
