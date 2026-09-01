@@ -130,6 +130,10 @@ MiniQMT 官方实现的 Python 源码同样是逐只循环，但 5219 只实测�
 | `get_market_data_ex` / `1d` | `dict[symbol, DataFrame]`；1 行 | `open, high, low, close, volume, amount` | 字符串日期索引、列顺序和 dtype 一致 | OHLCV 精确一致；amount 最大绝对差 `1.1920928955078125e-07` |
 | `get_market_data_ex` / `1m` | `dict[symbol, DataFrame]`；241 行 | `open, high, low, close, volume, amount` | 14 位字符串时间索引、列顺序和 dtype 一致 | volume 精确一致；价格最大差 `1.7763568394002505e-15`；amount 最大差 `7.450580596923828e-09` |
 
+2026-09-01 通过 `tools/capture_workflow_fixture.py` 分别在 MiniQMT 和 compat 环境采集
+`000779.SZ`、`20260901`，再用 `tools/compare_workflow_fixtures.py` 对照。两周期的外层
+股票键、行数、列名、索引和 dtype 均一致；逐字段记录显示仅存在浮点序列化尾差。
+
 上述差异属于浮点表示尾差，在当前样本中没有业务数值差异。
 
 #### 批量与边界验收（`get_market_data`）
@@ -184,6 +188,10 @@ MiniQMT 官方实现的 Python 源码同样是逐只循环，但 5219 只实测�
 依赖时间、核心价格、累计 `volume`、盘口或成交笔数的调用方可以继续隔离验证。
 依赖 `stockStatus`, `pvolume`, `tickvol`, `pe` 的调用方不能把当前结果视为与
 MiniQMT 完全等价。
+
+同一 fixture 验收确认：两边 tick DataFrame 均为 `(4915, 20)`，20 列顺序和 dtype 完全
+一致，索引时间戳一致；逐记录 JSON 比较为 `false` 主要来自已知浮点表示差异及上述字段
+差异，而不是行数或时间错位。
 
 ### `subscribe_quote` / `unsubscribe_quote`
 
