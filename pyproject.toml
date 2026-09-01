@@ -1,0 +1,36 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "xtquant-compat"
+version = "0.1.0"
+description = "A file-IPC compatibility layer for using Big QMT through MiniQMT-style xtdata APIs."
+readme = "README.md"
+requires-python = ">=3.8"
+license = {text = "Apache-2.0"}
+authors = [{name = "xtquant-compat contributors"}]
+dependencies = ["pandas>=1.5"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "License :: OSI Approved :: Apache Software License",
+  "Operating System :: Microsoft :: Windows",
+  "Programming Language :: Python :: 3",
+  "Topic :: Office/Business :: Financial :: Investment",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=7", "ruff>=0.5"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py38"
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F"]
