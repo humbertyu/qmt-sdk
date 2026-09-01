@@ -1,4 +1,5 @@
 import os
+import json
 import threading
 import time
 import uuid
@@ -36,7 +37,13 @@ class FileBridgeClient:
                 path = os.path.join(self.config.root, folder, filename)
                 if not os.path.exists(path):
                     continue
-                result = read_json(path)
+                try:
+                    # Windows may briefly deny a response while QMT is
+                    # finishing the atomic publish/close sequence.
+                    result = read_json(path)
+                except (OSError, ValueError, json.JSONDecodeError):
+                    time.sleep(min(self.config.poll_interval, 0.05))
+                    continue
                 try:
                     os.remove(path)
                 except OSError:
