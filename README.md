@@ -23,8 +23,10 @@ workloads, recovery, and portability rather than order-book or transaction-level
 | --- | --- |
 | `get_full_tick` | Tested against Big QMT |
 | `get_market_data_ex` | Implemented through raw `get_market_data2` |
+| `get_market_data` | Field-keyed DataFrame compatibility implemented |
 | `subscribe_quote` / `unsubscribe_quote` | Tested against Big QMT |
 | `get_instrument_detail` | Tested against Big QMT |
+| `get_stock_list_in_sector` | Implemented for sector universes |
 | `download_history_data(2)` | Experimental; depends on QMT `down_history_data` |
 | `bridge_status` | Extension API |
 

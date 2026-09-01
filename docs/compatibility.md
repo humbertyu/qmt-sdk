@@ -9,6 +9,8 @@ complete compatibility with every `xtquant` release.
 - Big QMT subscription callbacks use column arrays internally. The bridge expands them
   to the common `{stock_code: [tick]}` callback shape.
 - `get_market_data_ex` is converted to stock-keyed pandas DataFrames externally.
+- `get_market_data` is converted to field-keyed DataFrames with stock-code columns,
+  matching the shape used by `blackbox-qmt update-instruments`.
 - Big QMT may round cumulative `amount` differently from MiniQMT by small absolute
   amounts while `time`, `lastPrice`, and cumulative `volume` agree.
 - `download_history_data2` currently runs QMT's single-symbol downloader sequentially.

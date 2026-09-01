@@ -177,8 +177,18 @@ def _handle(ContextInfo, request):
         return ContextInfo.get_full_tick(params.get("stock_list", []))
     if method == "get_market_data_ex":
         return _get_market_data(ContextInfo, params)
+    if method == "get_market_data":
+        return _get_market_data(ContextInfo, params)
     if method == "get_instrument_detail":
         return ContextInfo.get_instrument_detail(params.get("stock_code", ""))
+    if method == "get_stock_list_in_sector":
+        get_sector = getattr(ContextInfo, "get_stock_list_in_sector", None)
+        if not callable(get_sector):
+            context = _raw_context(ContextInfo)
+            get_sector = getattr(context, "get_stock_list_in_sector", None) if context else None
+        if not callable(get_sector):
+            raise NotImplementedError("get_stock_list_in_sector unavailable")
+        return get_sector(params.get("sector_name", ""))
     if method == "subscribe_quote":
         return _subscribe(ContextInfo, request, params)
     if method == "unsubscribe_quote":
