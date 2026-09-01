@@ -32,57 +32,18 @@ API surface coverage and behavioral compatibility are intentionally reported sep
 状态必须按接口和周期理解。一个接口在任一已测周期存在字段差异时，完整 API 表中的
 总状态会标为 ⚠️，即使它的其他周期已经完全通过。
 
-| API / 周期 | 当前命令 | 大 QMT 端到端 | 返回结构 | 字段与数据 | 结论 |
+| API / 周期 | 验证入口 | 大 QMT 端到端 | 返回结构 | 字段与数据 | 结论 |
 | --- | --- | :---: | :---: | :---: | --- |
-| `get_stock_list_in_sector` | `update-instruments`, `sync-auto` | ✅ | ✅ | ⚠️ | 返回 `list[str]`；大 QMT 多 10 只较新股票。 |
-| `get_instrument_detail` | `update-instruments` | ✅ | ⚠️ | ✅ | 原生 31 个字段均可提供；返回结果另有 4 个大 QMT 扩展字段。 |
-| `get_market_data` / `1d` | `update-instruments` | ✅ | ✅ | ✅ | 字段字典、股票行、时间列以及样本数值通过。 |
-| `download_history_data2` / `1d`, `1m`, `tick` | `sync-auto`, `sync-tick-redis` | ✅ | ⚠️ | 不适用 | 两只股票下载通过；严格原生回调/返回语义尚未完全确认。 |
-| `get_market_data_ex` / `1d` | `sync-auto` | ✅ | ✅ | ✅ | 单日一根，字段、索引、dtype 和数值通过。 |
-| `get_market_data_ex` / `1m` | `sync-auto` | ✅ | ✅ | ✅ | 241 根，字段、索引、dtype 和数值通过。 |
-| `get_market_data_ex` / `tick` | `sync-auto`, `sync-tick-redis` | ✅ | ✅ | ⚠️ | 4915 个时间戳全部一致；4 个字段存在差异或占位值。 |
-| `subscribe_quote` / `tick` | `subscribe-tick` | ✅ | ✅ | ⚠️ | `{symbol: [tick]}` 结构通过；字段全集未完全一致。 |
-| `unsubscribe_quote` | `subscribe-tick` | ✅ | ⚠️ | 不适用 | 取消订阅有效；返回值语义未确认与原生完全一致。 |
-| `get_full_tick` | 快照轮询 | ✅ | ✅ | ⚠️ | 时间、价格、累计量和盘口核心字段通过；字段全集待确认。 |
-
-## `update-instruments` 全流程性能与结果记录
-
-以下结果来自 2026-09-01、目标日期 `20260831`、相同的
-`update-instruments --dry-run` 命令。两次均不写入 parquet 或 metadata。
-
-| 后端 | 总耗时 | 行数/股票数 | `is_trading` 分布 | 备注 |
-| --- | ---: | ---: | --- | --- |
-| MiniQMT native | 8.90 秒 | 5207 / 5207 | `True: 5201, False: 6` | 原生客户端一次批量行情查询；详情接口官方源码虽为 Python 循环，但底层客户端调用很快。 |
-| Big QMT compat（原 500 只分批） | 52.49 秒 | 5217 / 5217 | `False: 4752, True: 465` | 11 次行情桥接请求；该分批逻辑已移除。 |
-| Big QMT compat（当前单次批量） | 51.92 秒 | 5217 / 5217 | `False: 4752, True: 465` | 行情一次请求约 1.75 秒，主要耗时来自详情逐只调用。 |
-
-### 结果数量差异
-
-Big QMT 的 `沪深A股` 列表为 5217 只，MiniQMT 为 5207 只。多出的 10 只为：
-
-`301655.SZ`, `301688.SZ`, `301689.SZ`, `301697.SZ`, `301699.SZ`,
-`601123.SH`, `688826.SH`, `688828.SH`, `688835.SH`, `688836.SH`。
-
-这些是数据源更新时间差异导致的较新标的，不是兼容层重复、拆分或遗漏；当前策略是保留
-大 QMT 返回的完整集合，不在适配层静默过滤。
-
-### 性能原因定位
-
-MiniQMT 官方 `get_instrument_detail_list` 的 Python 源码确实逐只调用
-`get_instrument_detail`，但这些调用落在 MiniQMT 的本地客户端/服务和缓存路径上；5219 只
-实测约 2.34 秒。Big QMT 侧没有等价的批量详情接口，桥接只能在策略进程内循环调用
-`ContextInfo.get_instrument_detail`；5217 次调用约占 compat 全流程的 50 秒。文件桥接已
-做到外部一次请求，无法消除 QMT 策略 API 每次调用本身的开销。
-
-### 可复现命令
-
-```powershell
-python cli/cli.py update-instruments --date 20260831 --dry-run
-python cli/cli.py update-instruments --date 20260831 --backend compat --dry-run
-```
-
-单独测量底层阶段时，应分别记录 `get_market_data(['amount'], 全市场, '1d', ...)` 和
-`get_instrument_detail_list(全市场)` 的耗时，不能只看总流程时间。
+| `get_stock_list_in_sector` | Python API probe | ✅ | ✅ | ⚠️ | 返回 `list[str]`；大 QMT 多 10 只较新股票。 |
+| `get_instrument_detail` | Python API probe | ✅ | ⚠️ | ✅ | 原生 31 个字段均可提供；返回结果另有 4 个大 QMT 扩展字段。 |
+| `get_market_data` / `1d` | Python API probe | ✅ | ✅ | ✅ | 字段字典、股票行、时间列以及样本数值通过。 |
+| `download_history_data2` / `1d`, `1m`, `tick` | Python API probe | ✅ | ⚠️ | 不适用 | 两只股票下载通过；严格原生回调/返回语义尚未完全确认。 |
+| `get_market_data_ex` / `1d` | Python API probe | ✅ | ✅ | ✅ | 单日一根，字段、索引、dtype 和数值通过。 |
+| `get_market_data_ex` / `1m` | Python API probe | ✅ | ✅ | ✅ | 241 根，字段、索引、dtype 和数值通过。 |
+| `get_market_data_ex` / `tick` | `tools/compare_bigqmt_full_tick_db6.py` | ✅ | ✅ | ⚠️ | 4915 个时间戳全部一致；4 个字段存在差异或占位值。 |
+| `subscribe_quote` / `tick` | `tools/probe_subscription.py` | ✅ | ✅ | ⚠️ | `{symbol: [tick]}` 结构通过；字段全集未完全一致。 |
+| `unsubscribe_quote` | `tools/probe_subscription.py` | ✅ | ⚠️ | 不适用 | 取消订阅有效；返回值语义未确认与原生完全一致。 |
+| `get_full_tick` | Python API probe | ✅ | ✅ | ⚠️ | 时间、价格、累计量和盘口核心字段通过；字段全集待确认。 |
 
 ## 已验证接口的逐字段记录
 
@@ -112,7 +73,30 @@ python cli/cli.py update-instruments --date 20260831 --backend compat --dry-run
 | `ProductType` | 缺失 | 使用 `None` | ✅ 当前样本一致 |
 | `FloatVolumn`, `TotalVolumn`, `HSGTFlag`, `RzrkCode` | 大 QMT 扩展字段 | 原样保留 | ⚠️ MiniQMT 结果没有这些额外字段 |
 
-### `get_market_data` / `get_market_data_ex`（1d 与 1m）
+### `get_instrument_detail_list`
+
+该接口保持 MiniQMT 的公开签名和返回结构：一次调用返回
+`dict[stock_code, detail_dict]`。兼容层通过一次文件请求把股票列表交给桥接；桥接内部
+逐只调用 Big QMT 的 `ContextInfo.get_instrument_detail`，并对每个结果应用与单只接口
+相同的字段规范化。
+
+| 股票数量 | 返回数量 | 实测耗时 | 结论 |
+| ---: | ---: | ---: | --- |
+| 2 | 2 | 约 0.23 秒 | ✅ |
+| 50 | 50 | 约 0.53 秒 | ✅ |
+| 500 | 500 | 约 4.44 秒 | ✅ |
+| 5217 | 5217 | 约 50 秒 | ✅ 结构和数量完整；⚠️ 性能明显慢于 MiniQMT |
+
+MiniQMT 官方实现的 Python 源码同样是逐只循环，但 5219 只实测约 2.34 秒；Big QMT
+每次详情调用都经过策略运行时，因此不能仅依据源码中的循环形式推断性能相同。该差异
+属于底层 QMT 能力差异，不是文件桥接重复发送请求。
+
+### `get_market_data` / `1d`
+
+返回结构为 `dict[field, DataFrame]`，股票为行、时间为列；`amount` 字段的结构、索引和
+样本数值已与 MiniQMT 对照通过，浮点尾差最大约 `1.19e-7`。
+
+### `get_market_data_ex` / `1d` 与 `1m`
 
 验证股票为 `000779.SZ`，交易日为 `2026-08-31`。
 
