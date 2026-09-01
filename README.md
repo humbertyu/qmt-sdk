@@ -19,51 +19,15 @@ output has been validated against your production feed.
 The trade-off is latency and filesystem load. This transport targets ordinary quote
 workloads, recovery, and portability rather than order-book or transaction-level HFT.
 
-## API compatibility status
+## API implementation and compatibility
 
-The compatibility target is derived from the public functions exposed by an installed official
-`xtquant.xtdata`, rather than an invented project-specific API. The current reference is official
-distribution `250516.1.1` / module `xtquant_250516`, containing 138 public functions. All 138
-have matching public names and signatures; behavioral verification is tracked separately.
+README intentionally does not duplicate per-API claims. The single
+[API compatibility document](docs/xtdata-api-matrix.md) contains all 138 official APIs,
+workflow mappings, return-shape checks, field-level differences, numeric tolerances,
+known limitations, and retained reproduction tools.
 
-| Status | Count |
-| --- | ---: |
-| Public API surface | 138 / 138 |
-| Behavior verified | 8 |
-| Adapter implemented, verification pending | 116 |
-| Different MiniQMT-local semantics | 14 |
-
-See the complete table of official names, signatures, status, and known differences in
-[`docs/xtdata-api-matrix.md`](docs/xtdata-api-matrix.md).
-
-### Implemented core API
-
-Legend: ✅ verified; ⚠️ usable with a documented difference; ⏳ pending.
-
-| API | Current workflow | Big QMT call | Native structure | Native data | Notes |
-| --- | --- | :---: | :---: | :---: | --- |
-| `get_stock_list_in_sector` | `update-instruments`, `sync-auto` | ✅ | ✅ | ⚠️ | Big QMT contained all MiniQMT symbols plus 10 newer symbols. |
-| `get_instrument_detail` | `update-instruments` | ✅ | ✅ | ✅ | Required fields, aliases, defaults, and date strings verified. |
-| `get_market_data` (`1d`) | `update-instruments` | ✅ | ✅ | ✅ | Stock-by-timetag matrix and one-day values verified. |
-| `download_history_data2` (`1d`) | `sync-auto` | ✅ | ✅ | ✅ | Two-stock download and completion callback verified. |
-| `get_market_data_ex` (`1d`) | `sync-auto` | ✅ | ✅ | ✅ | Fields, index, dtypes, and one-day values verified. |
-| `download_history_data2` (`1m`) | `sync-auto` | ✅ | ✅ | ✅ | Two-stock download and completion callback verified. |
-| `get_market_data_ex` (`1m`) | `sync-auto` | ✅ | ✅ | ✅ | 241 bars; fields, index, dtypes, and values verified. |
-| `subscribe_quote` (`tick`) | `subscribe-tick` | ✅ | ✅ | ✅ | Native callback shape and quote timestamps verified. |
-| `unsubscribe_quote` | `subscribe-tick` | ✅ | ✅ | ✅ | Real Big QMT unsubscribe verified. |
-| `download_history_data2` (`tick`) | `sync-auto`, `sync-tick-redis` | ✅ | ✅ | ✅ | Two-stock download verified, including data after 15:00. |
-| `get_market_data_ex` (`tick`) | `sync-auto`, `sync-tick-redis` | ✅ | ✅ | ⚠️ | All 4,915 timestamps and core fields match; see the [Tick compatibility report](docs/tick-compatibility.md). |
-| `get_full_tick` | Snapshot/polling | ✅ | ✅ | ✅ | Current three-second quote snapshot verified. |
-| `bridge_status` | Diagnostics | ✅ | N/A | N/A | Project extension API. |
-
-The retained acceptance tools are `tools/capture_workflow_fixture.py`,
-`tools/compare_workflow_fixtures.py`, and `tools/probe_subscription.py`.
-
-Detailed Tick sample results, field-level differences, and usage guidance are maintained
-in the [Tick compatibility report](docs/tick-compatibility.md).
-
-Unsupported APIs will not be silently emulated. Compatibility details belong in
-[`docs/compatibility.md`](docs/compatibility.md).
+Unsupported or unverified APIs are marked explicitly and are not silently claimed as
+compatible.
 
 ## Install the external client
 
