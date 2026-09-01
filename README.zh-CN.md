@@ -38,17 +38,23 @@ QMT 环境适配，不面向订单簿或逐笔级高频交易。
 
 ### 已实现的核心 API
 
-| API | 大 QMT 可调用 | MiniQMT 结构一致 | MiniQMT 数据一致 |
-| --- | --- | --- | --- |
-| `get_full_tick` | 是 | 是 | 核心行情字段已验证 |
-| `get_market_data_ex`（`1d`、`1m`） | 是 | 是 | 单日样本已验证 |
-| `get_market_data_ex`（`tick`） | 是 | 是 | 核心字段已验证；差异见下文 |
-| `get_market_data` | 是 | 是，股票为行、时间为列 | 单日样本已验证 |
-| `subscribe_quote` / `unsubscribe_quote` | 是 | 是 | 当前快照和时间戳已验证 |
-| `get_instrument_detail` | 是 | 已规范化业务所需字段 | 单股票样本已验证 |
-| `get_stock_list_in_sector` | 是 | 股票代码列表 | 样本中大 QMT 多出 10 只较新股票 |
-| `download_history_data(2)` | 是 | 支持完成回调 | 已验证两只股票及 `1d`/`1m`/`tick` |
-| `bridge_status` | 是 | 项目扩展 API | 项目扩展 API |
+图例：✅ 已验证；⚠️ 可用但存在已知差异；⏳ 等待验证。
+
+| API | 当前业务命令 | 大 QMT 可调用 | MiniQMT 结构一致 | MiniQMT 数据一致 | 说明 |
+| --- | --- | :---: | :---: | :---: | --- |
+| `get_stock_list_in_sector` | `update-instruments`、`sync-auto` | ✅ | ✅ | ⚠️ | 大 QMT 包含 MiniQMT 全部代码，并多出 10 只较新股票。 |
+| `get_instrument_detail` | `update-instruments` | ✅ | ✅ | ✅ | 业务所需字段、别名、默认值和日期字符串已验证。 |
+| `get_market_data`（`1d`） | `update-instruments` | ✅ | ✅ | ✅ | 股票为行、时间为列，单日数据已验证。 |
+| `download_history_data2`（`1d`） | `sync-auto` | ✅ | ✅ | ✅ | 已验证两只股票下载和完成回调。 |
+| `get_market_data_ex`（`1d`） | `sync-auto` | ✅ | ✅ | ✅ | 字段、索引、dtype 和单日数值已验证。 |
+| `download_history_data2`（`1m`） | `sync-auto` | ✅ | ✅ | ✅ | 已验证两只股票下载和完成回调。 |
+| `get_market_data_ex`（`1m`） | `sync-auto` | ✅ | ✅ | ✅ | 241 根分钟线的字段、索引、dtype 和数值已验证。 |
+| `subscribe_quote`（`tick`） | `subscribe-tick` | ✅ | ✅ | ✅ | MiniQMT 回调结构和行情时间戳已验证。 |
+| `unsubscribe_quote` | `subscribe-tick` | ✅ | ✅ | ✅ | 已通过真实大 QMT 取消订阅验证。 |
+| `download_history_data2`（`tick`） | `sync-auto`、`sync-tick-redis` | ✅ | ✅ | ✅ | 已验证两只股票，包含 15:00 后的数据。 |
+| `get_market_data_ex`（`tick`） | `sync-auto`、`sync-tick-redis` | ✅ | ✅ | ⚠️ | 4915 个时间戳和核心字段一致；字段差异见下文。 |
+| `get_full_tick` | 快照轮询 | ✅ | ✅ | ✅ | 当前三秒行情快照已验证。 |
+| `bridge_status` | 诊断 | ✅ | 不适用 | 不适用 | 项目扩展 API。 |
 
 仓库保留了可重复验收工具：`tools/capture_workflow_fixture.py`、
 `tools/compare_workflow_fixtures.py` 和 `tools/probe_subscription.py`。

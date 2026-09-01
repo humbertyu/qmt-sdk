@@ -38,17 +38,23 @@ See the complete table of official names, signatures, status, and known differen
 
 ### Implemented core API
 
-| API | Big QMT operational | Native structure parity | Native data parity |
-| --- | --- | --- | --- |
-| `get_full_tick` | Yes | Yes | Core quote fields verified |
-| `get_market_data_ex` (`1d`, `1m`) | Yes | Yes | One-day fixture verified |
-| `get_market_data_ex` (`tick`) | Yes | Yes | Core fields verified; known differences below |
-| `get_market_data` | Yes | Yes, stock-by-timetag matrix | One-day fixture verified |
-| `subscribe_quote` / `unsubscribe_quote` | Yes | Yes | Current snapshot/timestamps verified |
-| `get_instrument_detail` | Yes | Required fields normalized | One-stock fixture verified |
-| `get_stock_list_in_sector` | Yes | List of symbols | Big QMT included 10 newer symbols in the fixture |
-| `download_history_data(2)` | Yes | Completion callback supported | Two stocks and `1d`/`1m`/`tick` verified |
-| `bridge_status` | Yes | Extension API | Extension API |
+Legend: ✅ verified; ⚠️ usable with a documented difference; ⏳ pending.
+
+| API | Current workflow | Big QMT call | Native structure | Native data | Notes |
+| --- | --- | :---: | :---: | :---: | --- |
+| `get_stock_list_in_sector` | `update-instruments`, `sync-auto` | ✅ | ✅ | ⚠️ | Big QMT contained all MiniQMT symbols plus 10 newer symbols. |
+| `get_instrument_detail` | `update-instruments` | ✅ | ✅ | ✅ | Required fields, aliases, defaults, and date strings verified. |
+| `get_market_data` (`1d`) | `update-instruments` | ✅ | ✅ | ✅ | Stock-by-timetag matrix and one-day values verified. |
+| `download_history_data2` (`1d`) | `sync-auto` | ✅ | ✅ | ✅ | Two-stock download and completion callback verified. |
+| `get_market_data_ex` (`1d`) | `sync-auto` | ✅ | ✅ | ✅ | Fields, index, dtypes, and one-day values verified. |
+| `download_history_data2` (`1m`) | `sync-auto` | ✅ | ✅ | ✅ | Two-stock download and completion callback verified. |
+| `get_market_data_ex` (`1m`) | `sync-auto` | ✅ | ✅ | ✅ | 241 bars; fields, index, dtypes, and values verified. |
+| `subscribe_quote` (`tick`) | `subscribe-tick` | ✅ | ✅ | ✅ | Native callback shape and quote timestamps verified. |
+| `unsubscribe_quote` | `subscribe-tick` | ✅ | ✅ | ✅ | Real Big QMT unsubscribe verified. |
+| `download_history_data2` (`tick`) | `sync-auto`, `sync-tick-redis` | ✅ | ✅ | ✅ | Two-stock download verified, including data after 15:00. |
+| `get_market_data_ex` (`tick`) | `sync-auto`, `sync-tick-redis` | ✅ | ✅ | ⚠️ | All 4,915 timestamps and core fields match; see field differences below. |
+| `get_full_tick` | Snapshot/polling | ✅ | ✅ | ✅ | Current three-second quote snapshot verified. |
+| `bridge_status` | Diagnostics | ✅ | N/A | N/A | Project extension API. |
 
 The retained acceptance tools are `tools/capture_workflow_fixture.py`,
 `tools/compare_workflow_fixtures.py`, and `tools/probe_subscription.py`.
