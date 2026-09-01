@@ -13,6 +13,20 @@ module version `xtquant_250516`, inspected on 2026-09-01.
 
 API surface coverage and behavioral compatibility are intentionally reported separately.
 
+## 长任务、取消与恢复协议
+
+文件桥接对可能耗时较长的批量详情和历史数据下载统一写入
+`<bridge_root>/status/<request_id>.json`。状态文件包含 `state`（`running`、
+`finished`、`failed` 或 `cancelled`）、`processed`、`total`、`failed`、
+`bridge_instance_id` 和时间戳。客户端可用 `xtdata.get_request_status(request_id)`
+读取状态，用 `xtdata.cancel_request(request_id)` 发出协作式取消请求；取消会在每个
+股票处理边界生效，底层 QMT 单只调用阻塞时无法强制中断。
+
+普通同步 API 保持纯查询语义：不会在 `get_market_data*` 中隐式下载历史数据。
+需要补齐本地缓存时必须由调用方显式调用 `download_history_data*`。桥接重启会产生新的
+`bridge_instance_id`，旧请求不应继续被视为可恢复；调用方应检查实例 ID，并按业务策略
+重新提交未完成任务。响应和错误文件仍按请求 ID 一一对应，处理中的文件不会被覆盖。
+
 ## 重点业务接口验收汇总
 
 状态必须按接口和周期理解。一个接口在任一已测周期存在字段差异时，完整 API 表中的

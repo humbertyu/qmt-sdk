@@ -172,6 +172,13 @@ def get_instrument_detail(stock_code, iscomplete=False):
     })
     if not isinstance(detail, dict):
         return detail
+    return _normalize_instrument_detail(detail)
+
+
+def _normalize_instrument_detail(detail):
+    """Apply the same MiniQMT-compatible shape to single and batch results."""
+    if not isinstance(detail, dict):
+        return detail
     detail = dict(detail)
     aliases = {"FloatVolumn": "FloatVolume", "TotalVolumn": "TotalVolume"}
     for source, target in aliases.items():
@@ -205,7 +212,9 @@ def get_instrument_detail_list(stock_list, iscomplete=False):
         {"stock_list": list(stock_list), "iscomplete": bool(iscomplete)},
         timeout=max(client.config.timeout, 300),
     )
-    return result if isinstance(result, dict) else {}
+    if not isinstance(result, dict):
+        return {}
+    return {stock: _normalize_instrument_detail(detail) for stock, detail in result.items()}
 
 
 def get_instrument_type(stock_code, variety_list=None):
@@ -252,6 +261,17 @@ def get_ipo_info(start_time="", end_time=""):
 
 def bridge_status():
     return get_client().request("bridge_status", {})
+
+
+def get_request_status(request_id):
+    """Read progress for a long-running file-bridge request, if available."""
+    return get_client().request_status(request_id)
+
+
+def cancel_request(request_id):
+    """Request cooperative cancellation of a running bridge operation."""
+    get_client().cancel(request_id)
+    return True
 
 
 def download_history_data2(

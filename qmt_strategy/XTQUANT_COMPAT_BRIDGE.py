@@ -12,6 +12,7 @@ PROCESSING = os.path.join(ROOT, "processing")
 RESPONSES = os.path.join(ROOT, "responses")
 ERRORS = os.path.join(ROOT, "errors")
 CANCELLATIONS = os.path.join(ROOT, "cancellations")
+STATUS = os.path.join(ROOT, "status")
 EVENTS = os.path.join(ROOT, "events")
 PROTOCOL_VERSION = 1
 
@@ -23,7 +24,7 @@ _bridge_instance_id = uuid.uuid4().hex
 
 
 def _mkdirs():
-    for path in (REQUESTS, PROCESSING, RESPONSES, ERRORS, EVENTS, CANCELLATIONS):
+    for path in (REQUESTS, PROCESSING, RESPONSES, ERRORS, EVENTS, CANCELLATIONS, STATUS):
         if not os.path.isdir(path):
             os.makedirs(path)
 
@@ -251,12 +252,37 @@ def _subscribe_formula(ContextInfo, request, params):
     return {"subscription_id": subscription_id, "qmt_sequence": qmt_sequence}
 
 
-def _download_history(params):
+def _write_status(request_id, state, processed=0, total=0, failed=0, error=None):
+    if not request_id:
+        return
+    existing = {}
+    path = os.path.join(STATUS, str(request_id) + ".json")
+    try:
+        with open(path, "r", encoding="utf-8") as stream:
+            existing = json.load(stream)
+    except Exception:
+        pass
+    payload = {"request_id": request_id, "bridge_instance_id": _bridge_instance_id,
+               "state": state, "processed": processed, "total": total,
+               "failed": failed, "updated_at": time.time()}
+    if total == 0 and existing:
+        payload["processed"] = existing.get("processed", processed)
+        payload["total"] = existing.get("total", total)
+    if error:
+        payload["error"] = error
+    _atomic_write(os.path.join(STATUS, str(request_id) + ".json"), payload)
+
+
+def _download_history(params, request_id=None):
     download = globals().get("down_history_data")
     if not callable(download):
         raise NotImplementedError("QMT global down_history_data unavailable")
     results = {}
-    for stock in params.get("stock_list", []):
+    stocks = params.get("stock_list", [])
+    for index, stock in enumerate(stocks, 1):
+        if _cancelled(request_id):
+            raise RuntimeError("request cancelled")
+        _write_status(request_id, "running", index - 1, len(stocks))
         results[stock] = download(
             stock, params.get("period", "1d"),
             params.get("start_time", ""), params.get("end_time", ""),
@@ -278,10 +304,13 @@ def _cancelled(request_id):
 def _instrument_detail_list(ContextInfo, request):
     params = request.get("params") or {}
     result = {}
-    for stock in params.get("stock_list", []):
+    stocks = params.get("stock_list", [])
+    _write_status(request.get("request_id"), "running", 0, len(stocks))
+    for index, stock in enumerate(stocks, 1):
         if _cancelled(request.get("request_id")):
             raise RuntimeError("request cancelled")
         result[stock] = ContextInfo.get_instrument_detail(stock)
+        _write_status(request.get("request_id"), "running", index, len(stocks))
     return result
 
 
@@ -351,7 +380,7 @@ def _handle(ContextInfo, request):
         qmt_id = state.get("qmt_sequence") if state else formula_id
         return _call_available(ContextInfo, "unsubscribe_formula", (qmt_id,))
     if method == "download_history_data2":
-        return _download_history(params)
+        return _download_history(params, request.get("request_id"))
     if method == "get_local_data":
         return _get_market_data(ContextInfo, params)
 
@@ -397,15 +426,18 @@ def _process_one(ContextInfo, name):
     try:
         with open(processing, "r", encoding="utf-8") as stream:
             request = json.load(stream)
+        _write_status(request.get("request_id"), "running", 0, 0)
         data = _jsonable(_handle(ContextInfo, request))
         result = {"request_id": request.get("request_id"), "ok": True, "data": data}
         _atomic_write(os.path.join(RESPONSES, name), result)
+        _write_status(request.get("request_id"), "finished", 1, 1)
     except Exception as exc:
         result = {
             "request_id": request.get("request_id") if request else "",
             "ok": False, "error": repr(exc), "traceback": traceback.format_exc(),
         }
         _atomic_write(os.path.join(ERRORS, name), result)
+        _write_status(request.get("request_id"), "cancelled" if "cancel" in str(exc).lower() else "failed", 0, 0, error=repr(exc))
     try:
         os.remove(processing)
     except OSError:
