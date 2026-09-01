@@ -14,6 +14,11 @@ parser.add_argument(
     default=None,
     help="独立输出根目录；默认 D:\\Temp\\xtquant-sync-1d-probe\\<date>",
 )
+parser.add_argument(
+    "--stocks-file",
+    default=None,
+    help="可选：使用 JSON 股票列表文件，确保 native/compat 使用完全相同的样本",
+)
 args = parser.parse_args()
 
 output_root = Path(args.output or (Path(r"D:\Temp\xtquant-sync-1d-probe") / args.date))
@@ -25,7 +30,17 @@ if args.backend == "native":
 else:
     from xtquant_compat import xtdata
 
-stocks = xtdata.get_stock_list_in_sector("沪深A股")
+if args.stocks_file:
+    stocks = json.loads(Path(args.stocks_file).read_text(encoding="utf-8"))
+    if not isinstance(stocks, list) or not all(isinstance(item, str) for item in stocks):
+        raise ValueError("--stocks-file must contain a JSON string array")
+else:
+    stocks = xtdata.get_stock_list_in_sector("沪深A股")
+    # Make the native list reusable by the compat run without querying a
+    # potentially different sector universe.
+    (output_root / "stocks.json").write_text(
+        json.dumps(stocks, ensure_ascii=False, indent=2), encoding="utf-8"
+    )
 print("backend", args.backend, "stocks", len(stocks), "batch_size", args.batch_size, flush=True)
 total_started = time.time()
 total_rows = 0
