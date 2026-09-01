@@ -214,6 +214,10 @@ MiniQMT 完全等价。
 | MiniQMT 严格回调对照 | 原生 `download_history_data2(tick)` 探针超过 90 秒未返回且无回调，已中止 | ⚠️ 不能据此声明回调字段和时序完全等价 |
 | 批量规模 | 已测 2 只股票 | 全市场负载、超时和磁盘容量尚未验证 |
 
+2026-09-01 重启后的 Big QMT 能力探测结果：`download_history_data2` 未暴露，
+`download_history_data` 与 `down_history_data` 可用。因此 compat 的批量下载只能在桥接
+内部逐只回退，不能声称使用了 Big QMT 原生批量下载接口。
+
 ### `download_history_data`
 
 这是 MiniQMT 的单股票入口，兼容层保持同名签名，并委托到批量入口；QMT 桥接内部再将
