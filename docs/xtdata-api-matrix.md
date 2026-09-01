@@ -136,16 +136,19 @@ MiniQMT 官方实现的 Python 源码同样是逐只循环，但 5219 只实测�
 
 2026-09-01 使用 `amount`、`1d`、`20260831` 验证：2 只返回形状 `(2, 1)`，全市场 5217
 只返回 `(5217, 1)`，一次请求约 2.26 秒；空股票列表、无数据日期和 `count=1` 均正常
-返回字段字典，不抛异常。接口本身的结构和调用语义通过，但“无数据”场景的 DataFrame
-是否应为空、以及 `fill_data`/`dividend_type` 的全部组合仍需按 MiniQMT 逐项确认。
+返回字段字典，不抛异常。Big QMT 默认 `fill_data=True` 会把不可见历史补成 0；同请求
+使用 `fill_data=False` 只返回 465 个有数据股票。接口结构和调用语义通过，但数据完整性
+依赖 Big QMT 目标日期缓存，不能假定与 MiniQMT 自动一致。
 
 #### 对 `update-instruments` 的迁移结论
 
 兼容库层面的两个 API 已满足调用和结构要求，但不能仅凭此宣布业务迁移完成。使用相同
 目标日期 `20260831` 的全市场结果中，MiniQMT 的 `amount` 推导交易状态为
-`True: 5201, False: 6`，Big QMT 为 `True: 465, False: 4752`。这不是结构问题，而是
-Big QMT 目标日期全市场历史缓存/数据可见范围与 MiniQMT 不一致；若直接迁移，
-`is_trading` 等业务字段会发生实质错误。
+`True: 5201, False: 6`，Big QMT 在默认 `fill_data=True` 下为 `True: 465, False: 4752`。
+进一步使用 `fill_data=False` 时，Big QMT 只返回 465 行，且全部为正成交额；其余股票
+并非返回 `NaN`，而是目标日期历史数据在 Big QMT 本地缓存中不可见，`fill_data=True`
+将缺失项补成 0。这不是 `is_trading` 判断代码或字段映射错误，而是两个 QMT 实例的历史
+缓存/数据可见范围不同；若直接迁移，`is_trading` 等业务字段会发生实质错误。
 
 结论：`update-instruments` 当前具备“技术链路可迁移、可做只读 dry-run”的条件，尚不具备
 “结果无需复核即可替换 MiniQMT 生产流程”的条件。必须先解决或明确补齐 Big QMT 目标日
