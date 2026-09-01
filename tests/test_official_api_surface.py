@@ -37,4 +37,3 @@ def test_important_native_signatures_are_preserved():
         "(stock_code, period='1d', start_time='', end_time='', count=0, "
         "dividend_type=None, callback=None)"
     )
-
