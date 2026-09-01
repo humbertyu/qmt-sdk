@@ -8,3 +8,5 @@
 - `get_full_tick`, `get_market_data_ex`, instrument detail, and experimental history download.
 - Daily workflow APIs for `update-instruments` and `sync-auto`: `get_market_data` and
   `get_stock_list_in_sector`, plus a longer full-market download timeout.
+- Added a 41-function compatibility matrix generated from an installed official
+  `xtquant.xtdata` API snapshot.

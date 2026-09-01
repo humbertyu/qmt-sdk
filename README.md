@@ -17,7 +17,23 @@ output has been validated against your production feed.
 The trade-off is latency and filesystem load. This transport targets ordinary quote
 workloads, recovery, and portability rather than order-book or transaction-level HFT.
 
-## Supported API
+## API compatibility status
+
+The compatibility target is derived from the public functions exposed by an installed official
+`xtquant.xtdata`, rather than an invented project-specific API. The current reference snapshot
+contains 41 public functions.
+
+| Status | Count |
+| --- | ---: |
+| Implemented | 7 |
+| Experimental | 2 |
+| Planned | 31 |
+| Different MiniQMT-local semantics | 1 |
+
+See the complete table of official names, signatures, status, and known differences in
+[`docs/xtdata-api-matrix.md`](docs/xtdata-api-matrix.md).
+
+### Implemented core API
 
 | API | Status |
 | --- | --- |
