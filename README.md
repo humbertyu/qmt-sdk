@@ -1,5 +1,7 @@
 # xtquant-compat
 
+[English](README.md) | [简体中文](README.zh-CN.md)
+
 `xtquant-compat` exposes a focused subset of the MiniQMT `xtquant.xtdata` API through a
 pure file bridge running inside Big QMT. It is designed for QMT Python runtimes that do
 not provide `_socket`, `_ctypes`, pandas, Redis, ZeroMQ, or third-party packages.
