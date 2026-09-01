@@ -34,7 +34,7 @@ API surface coverage and behavioral compatibility are intentionally reported sep
 | `download_his_st_data()` | 🧪 | Environment-dependent adapter; real-QMT verification pending. |
 | `download_history_contracts(incrementally=True)` | 🧪 | Environment-dependent adapter; real-QMT verification pending. |
 | `download_history_data(stock_code, period, start_time='', end_time='', incrementally=None)` | 🧪 | Environment-dependent adapter; real-QMT verification pending. |
-| `download_history_data2(stock_list, period, start_time='', end_time='', callback=None, incrementally=None)` | 🧪 | Sequential Big QMT download adapter; full-market verification pending. |
+| `download_history_data2(stock_list, period, start_time='', end_time='', callback=None, incrementally=None)` | ✅ | Two-stock `1d`/`1m`/`tick` download and completion callback verified; full-market load testing pending. |
 | `download_holiday_data(incrementally=True)` | 🧪 | Environment-dependent adapter; real-QMT verification pending. |
 | `download_index_weight()` | 🧪 | Environment-dependent adapter; real-QMT verification pending. |
 | `download_metatable_data()` | 🧪 | Environment-dependent adapter; real-QMT verification pending. |
@@ -69,7 +69,7 @@ API surface coverage and behavioral compatibility are intentionally reported sep
 | `get_hk_broker_dict()` | 🧪 | Environment-dependent adapter; real-QMT verification pending. |
 | `get_holidays()` | 🧪 | Environment-dependent adapter; real-QMT verification pending. |
 | `get_index_weight(index_code)` | 🧪 | Environment-dependent adapter; real-QMT verification pending. |
-| `get_instrument_detail(stock_code, iscomplete=False)` | ✅ | Environment-dependent adapter; real-QMT verification pending. |
+| `get_instrument_detail(stock_code, iscomplete=False)` | ✅ | Required native fields, aliases, defaults, and date strings normalized; Big QMT may expose extra fields. |
 | `get_instrument_detail_list(stock_list, iscomplete=False)` | 🧪 | Environment-dependent adapter; real-QMT verification pending. |
 | `get_instrument_type(stock_code, variety_list=None)` | 🧪 | Environment-dependent adapter; real-QMT verification pending. |
 | `get_ipo_info(start_time='', end_time='')` | 🧪 | Environment-dependent adapter; real-QMT verification pending. |
@@ -80,9 +80,9 @@ API surface coverage and behavioral compatibility are intentionally reported sep
 | `get_l2thousand_queue(stock_code, gear_num=None, price=None)` | 🧪 | Environment-dependent adapter; real-QMT verification pending. |
 | `get_local_data(field_list=[], stock_list=[], period='1d', start_time='', end_time='', count=-1, dividend_type='none', fill_data=True, data_dir=None)` | 🧪 | `data_dir` cannot retain its MiniQMT-local cache meaning. |
 | `get_main_contract(code_market: str, start_time: str = '', end_time: str = '')` | 🧪 | Environment-dependent adapter; real-QMT verification pending. |
-| `get_market_data(field_list=[], stock_list=[], period='1d', start_time='', end_time='', count=-1, dividend_type='none', fill_data=True)` | ✅ | Field-keyed DataFrame conversion verified. |
+| `get_market_data(field_list=[], stock_list=[], period='1d', start_time='', end_time='', count=-1, dividend_type='none', fill_data=True)` | ✅ | Native field-keyed, stock-by-timetag DataFrame orientation and one-day values verified. |
 | `get_market_data3(field_list=[], stock_list=[], period='1d', start_time='', end_time='', count=-1, dividend_type='none', fill_data=True, enable_read_from_server=True)` | 🧪 | Environment-dependent adapter; real-QMT verification pending. |
-| `get_market_data_ex(field_list=[], stock_list=[], period='1d', start_time='', end_time='', count=-1, dividend_type='none', fill_data=True)` | ✅ | Stock-keyed DataFrame conversion verified. |
+| `get_market_data_ex(field_list=[], stock_list=[], period='1d', start_time='', end_time='', count=-1, dividend_type='none', fill_data=True)` | ✅ | Native fields/index/dtypes verified for `1d`, `1m`, and Tick. Tick core data matches; `stockStatus`, `pvolume`, and `tickvol` differ. |
 | `get_market_data_ex_ori(field_list=[], stock_list=[], period='1d', start_time='', end_time='', count=-1, dividend_type='none', fill_data=True, enable_read_from_server=True, data_dir=None)` | 🧪 | Environment-dependent adapter; real-QMT verification pending. |
 | `get_market_data_ori(field_list=[], stock_list=[], period='1d', start_time='', end_time='', count=-1, dividend_type='none', fill_data=True, enable_read_from_server=True, data_dir=None)` | 🧪 | Environment-dependent adapter; real-QMT verification pending. |
 | `get_market_last_trade_date(market)` | 🧪 | Environment-dependent adapter; real-QMT verification pending. |
@@ -101,7 +101,7 @@ API surface coverage and behavioral compatibility are intentionally reported sep
 | `get_sec_main_contract(code_market: str, start_time: str = '', end_time: str = '')` | 🧪 | Environment-dependent adapter; real-QMT verification pending. |
 | `get_sector_info(sector_name='')` | 🧪 | Environment-dependent adapter; real-QMT verification pending. |
 | `get_sector_list()` | 🧪 | Environment-dependent adapter; real-QMT verification pending. |
-| `get_stock_list_in_sector(sector_name, real_timetag=-1)` | ✅ | Environment-dependent adapter; real-QMT verification pending. |
+| `get_stock_list_in_sector(sector_name, real_timetag=-1)` | ✅ | Shape verified. Tested Big QMT universe contained all MiniQMT symbols plus 10 newer symbols. |
 | `get_stock_type(stock_code, variety_list=None)` | 🧪 | Environment-dependent adapter; real-QMT verification pending. |
 | `get_tabular_bson(codes: list, fields: list, period: str, start_time: str, end_time: str, count: int = -1, **kwargs)` | 🧪 | Environment-dependent adapter; real-QMT verification pending. |
 | `get_tabular_data(field_list=[], stock_list=[], period='1d', start_time='', end_time='', count=-1, dividend_type='none', fill_data=True)` | 🧪 | Environment-dependent adapter; real-QMT verification pending. |
@@ -136,7 +136,7 @@ API surface coverage and behavioral compatibility are intentionally reported sep
 | `subscribe_formula(formula_name, stock_code, period, start_time='', end_time='', count=-1, dividend_type=None, extend_param={}, callback=None)` | 🧪 | Environment-dependent adapter; real-QMT verification pending. |
 | `subscribe_l2thousand(stock_code, gear_num=None, callback=None)` | 🧪 | Environment-dependent adapter; real-QMT verification pending. |
 | `subscribe_l2thousand_queue(stock_code, callback=None, gear_num=None, price=None)` | 🧪 | Environment-dependent adapter; real-QMT verification pending. |
-| `subscribe_quote(stock_code, period='1d', start_time='', end_time='', count=0, callback=None)` | ✅ | Durable callback files verified with real Big QMT. |
+| `subscribe_quote(stock_code, period='1d', start_time='', end_time='', count=0, callback=None)` | ✅ | Durable native-shaped callback files and real Big QMT snapshot verified. |
 | `subscribe_quote2(stock_code, period='1d', start_time='', end_time='', count=0, dividend_type=None, callback=None)` | 🧪 | Environment-dependent adapter; real-QMT verification pending. |
 | `subscribe_whole_quote(code_list, callback=None)` | 🧪 | Environment-dependent adapter; real-QMT verification pending. |
 | `supply_history_data(stock_code, period, start_time='', end_time='', incrementally=None)` | 🧪 | Environment-dependent adapter; real-QMT verification pending. |
@@ -145,7 +145,7 @@ API surface coverage and behavioral compatibility are intentionally reported sep
 | `timetag_to_datetime(timetag, format)` | 🧪 | Environment-dependent adapter; real-QMT verification pending. |
 | `try_except(func)` | 🧪 | Environment-dependent adapter; real-QMT verification pending. |
 | `unsubscribe_formula(request_id)` | 🧪 | Environment-dependent adapter; real-QMT verification pending. |
-| `unsubscribe_quote(seq)` | ✅ | Environment-dependent adapter; real-QMT verification pending. |
+| `unsubscribe_quote(seq)` | ✅ | Real Big QMT unsubscribe verified. |
 | `watch_quote_server_status(callback)` | ➖ | Environment-dependent adapter; real-QMT verification pending. |
 | `watch_xtquant_status(callback)` | ➖ | Environment-dependent adapter; real-QMT verification pending. |
 | `write_feather(dest_path, param, df)` | ➖ | Environment-dependent adapter; real-QMT verification pending. |
@@ -155,6 +155,6 @@ API surface coverage and behavioral compatibility are intentionally reported sep
 | Metric | Count |
 | --- | ---: |
 | Public names and signatures | 138 / 138 |
-| ✅ Behavior verified | 7 |
-| 🧪 Verification pending | 117 |
+| ✅ Behavior verified | 8 |
+| 🧪 Verification pending | 116 |
 | ➖ Different local semantics | 14 |

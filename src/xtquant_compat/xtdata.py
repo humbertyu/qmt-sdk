@@ -18,24 +18,60 @@ def _request(method, **params):
     return get_client().request(method, params)
 
 
-def _frames_by_stock(raw):
+_KLINE_DEFAULT_FIELDS = [
+    "time", "open", "high", "low", "close", "volume", "amount",
+    "settelementPrice", "openInterest", "preClose", "suspendFlag",
+]
+_TICK_DEFAULT_FIELDS = [
+    "time", "lastPrice", "open", "high", "low", "lastClose", "amount",
+    "volume", "pvolume", "tickvol", "stockStatus", "openInt",
+    "lastSettlementPrice", "askPrice", "bidPrice", "askVol", "bidVol",
+    "settlementPrice", "transactionNum", "pe",
+]
+
+
+def _native_timetag_index(frame, period):
+    if "stime" not in frame:
+        return frame
+    values = frame.pop("stime").astype(str).str.split(".").str[0]
+    width = 8 if period == "1d" else 14
+    frame.index = values.str[:width]
+    frame.index.name = None
+    return frame
+
+
+def _frames_by_stock(raw, requested_fields=None, period="1d"):
     if not isinstance(raw, dict):
         return raw
     result = {}
     for stock, value in raw.items():
         if isinstance(value, pd.DataFrame):
             result[stock] = value
-        elif isinstance(value, dict):
-            result[stock] = pd.DataFrame(value)
-        elif isinstance(value, list):
-            result[stock] = pd.DataFrame(value)
+        elif isinstance(value, (dict, list)):
+            frame = pd.DataFrame(value)
+            frame = _native_timetag_index(frame, period)
+            fields = list(requested_fields or [])
+            if not fields:
+                fields = _TICK_DEFAULT_FIELDS if period == "tick" else _KLINE_DEFAULT_FIELDS
+                if period == "tick" and "tickvol" not in frame:
+                    frame["tickvol"] = 0
+                if period == "tick" and "pe" not in frame:
+                    frame["pe"] = 0.0
+            for field in fields:
+                if field not in frame:
+                    frame[field] = pd.NA
+            frame = frame[fields]
+            for field in ("stockStatus", "openInt", "suspendFlag"):
+                if field in frame and not frame[field].isna().any():
+                    frame[field] = frame[field].astype("int32")
+            result[stock] = frame
         else:
             result[stock] = value
     return result
 
 
 def _fields_by_stock(raw, requested_fields=None):
-    """Convert Big QMT's stock-first columns to xtdata's field-first DataFrames."""
+    """Convert Big QMT columns to native field -> stock-by-timetag matrices."""
     if not isinstance(raw, dict):
         return raw
     requested = list(requested_fields or [])
@@ -47,18 +83,23 @@ def _fields_by_stock(raw, requested_fields=None):
         requested = sorted(field_names - {"time", "stime"})
     result = {}
     for field in requested:
-        columns = {}
+        rows = {}
         for stock, value in raw.items():
             if not isinstance(value, dict) or field not in value:
                 continue
             values = value.get(field)
             if not isinstance(values, list):
                 values = [values]
-            index = value.get("time") or value.get("stime") or list(range(len(values)))
-            if not isinstance(index, list) or len(index) != len(values):
-                index = list(range(len(values)))
-            columns[stock] = pd.Series(values, index=index)
-        result[field] = pd.DataFrame(columns)
+            timetags = value.get("stime") or value.get("time") or list(range(len(values)))
+            if not isinstance(timetags, list) or len(timetags) != len(values):
+                timetags = list(range(len(values)))
+            rows[stock] = {
+                str(timetag).split(".")[0]: item
+                for timetag, item in zip(timetags, values)
+            }
+        result[field] = pd.DataFrame.from_dict(rows, orient="index")
+        result[field].index.name = None
+        result[field].columns.name = None
     return result
 
 
@@ -80,7 +121,7 @@ def get_market_data_ex(
         "dividend_type": dividend_type,
         "fill_data": fill_data,
     })
-    return _frames_by_stock(raw)
+    return _frames_by_stock(raw, field_list, period)
 
 
 def get_market_data(
@@ -125,10 +166,32 @@ def unsubscribe_quote(seq):
 
 
 def get_instrument_detail(stock_code, iscomplete=False):
-    return get_client().request("get_instrument_detail", {
+    detail = get_client().request("get_instrument_detail", {
         "stock_code": stock_code,
         "iscomplete": bool(iscomplete),
     })
+    if not isinstance(detail, dict):
+        return detail
+    detail = dict(detail)
+    aliases = {"FloatVolumn": "FloatVolume", "TotalVolumn": "TotalVolume"}
+    for source, target in aliases.items():
+        if target not in detail and source in detail:
+            detail[target] = detail[source]
+    defaults = {
+        "IsRecent": False, "IsTrading": False, "LastVolume": 0,
+        "LongMarginRatio": 0.0, "ShortMarginRatio": 0.0,
+        "SettlementPrice": detail.get("PreClose", 0.0),
+        "ContractOpenInterestQuota": 0, "ContractTradeQuota": 0,
+        "ProductOpenInterestQuota": 0, "ProductTradeQuota": 0,
+        "ProductType": None,
+    }
+    for key, value in defaults.items():
+        if detail.get(key) is None:
+            detail[key] = value
+    for key in ("CreateDate", "OpenDate", "ExpireDate", "TradingDay"):
+        if key in detail and detail[key] is not None:
+            detail[key] = str(detail[key])
+    return detail
 
 
 def get_instrumentdetail(stock_code):

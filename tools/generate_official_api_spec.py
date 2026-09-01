@@ -48,8 +48,9 @@ def main():
         encoding="utf-8",
     )
     verified = {
-        "get_full_tick", "get_instrument_detail", "get_market_data", "get_market_data_ex",
-        "get_stock_list_in_sector", "subscribe_quote", "unsubscribe_quote",
+        "download_history_data2", "get_full_tick", "get_instrument_detail",
+        "get_market_data", "get_market_data_ex", "get_stock_list_in_sector",
+        "subscribe_quote", "unsubscribe_quote",
     }
     different = {
         "connect", "disconnect", "reconnect", "get_client", "get_data_dir",
@@ -59,11 +60,31 @@ def main():
     }
     notes = {
         "get_full_tick": "Verified against the current Big QMT three-second quote feed.",
-        "get_market_data": "Field-keyed DataFrame conversion verified.",
-        "get_market_data_ex": "Stock-keyed DataFrame conversion verified.",
-        "subscribe_quote": "Durable callback files verified with real Big QMT.",
+        "download_history_data2": (
+            "Two-stock `1d`/`1m`/`tick` download and completion callback verified; "
+            "full-market load testing pending."
+        ),
+        "get_instrument_detail": (
+            "Required native fields, aliases, defaults, and date strings normalized; "
+            "Big QMT may expose extra fields."
+        ),
+        "get_market_data": (
+            "Native field-keyed, stock-by-timetag DataFrame orientation and one-day "
+            "values verified."
+        ),
+        "get_market_data_ex": (
+            "Native fields/index/dtypes verified for `1d`, `1m`, and Tick. Tick core "
+            "data matches; `stockStatus`, `pvolume`, and `tickvol` differ."
+        ),
+        "get_stock_list_in_sector": (
+            "Shape verified. Tested Big QMT universe contained all MiniQMT symbols plus "
+            "10 newer symbols."
+        ),
+        "subscribe_quote": (
+            "Durable native-shaped callback files and real Big QMT snapshot verified."
+        ),
+        "unsubscribe_quote": "Real Big QMT unsubscribe verified.",
         "get_local_data": "`data_dir` cannot retain its MiniQMT-local cache meaning.",
-        "download_history_data2": "Sequential Big QMT download adapter; full-market verification pending.",
     }
     rows = []
     for item in functions:

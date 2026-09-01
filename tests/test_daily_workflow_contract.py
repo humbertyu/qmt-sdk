@@ -28,7 +28,7 @@ def test_update_instruments_contract(monkeypatch):
         start_time="20260901", end_time="20260901",
     )
     assert stocks == ["000001.SZ", "000002.SZ"]
-    assert amounts["amount"].iloc[-1].to_dict() == {
+    assert amounts["amount"].iloc[:, -1].to_dict() == {
         "000001.SZ": 10.0, "000002.SZ": 20.0,
     }
 

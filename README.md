@@ -29,8 +29,8 @@ have matching public names and signatures; behavioral verification is tracked se
 | Status | Count |
 | --- | ---: |
 | Public API surface | 138 / 138 |
-| Behavior verified | 7 |
-| Adapter implemented, verification pending | 117 |
+| Behavior verified | 8 |
+| Adapter implemented, verification pending | 116 |
 | Different MiniQMT-local semantics | 14 |
 
 See the complete table of official names, signatures, status, and known differences in
@@ -38,16 +38,28 @@ See the complete table of official names, signatures, status, and known differen
 
 ### Implemented core API
 
-| API | Status |
-| --- | --- |
-| `get_full_tick` | Tested against Big QMT |
-| `get_market_data_ex` | Implemented through raw `get_market_data2` |
-| `get_market_data` | Field-keyed DataFrame compatibility implemented |
-| `subscribe_quote` / `unsubscribe_quote` | Tested against Big QMT |
-| `get_instrument_detail` | Tested against Big QMT |
-| `get_stock_list_in_sector` | Implemented for sector universes |
-| `download_history_data(2)` | Experimental; depends on QMT `down_history_data` |
-| `bridge_status` | Extension API |
+| API | Big QMT operational | Native structure parity | Native data parity |
+| --- | --- | --- | --- |
+| `get_full_tick` | Yes | Yes | Core quote fields verified |
+| `get_market_data_ex` (`1d`, `1m`) | Yes | Yes | One-day fixture verified |
+| `get_market_data_ex` (`tick`) | Yes | Yes | Core fields verified; known differences below |
+| `get_market_data` | Yes | Yes, stock-by-timetag matrix | One-day fixture verified |
+| `subscribe_quote` / `unsubscribe_quote` | Yes | Yes | Current snapshot/timestamps verified |
+| `get_instrument_detail` | Yes | Required fields normalized | One-stock fixture verified |
+| `get_stock_list_in_sector` | Yes | List of symbols | Big QMT included 10 newer symbols in the fixture |
+| `download_history_data(2)` | Yes | Completion callback supported | Two stocks and `1d`/`1m`/`tick` verified |
+| `bridge_status` | Yes | Extension API | Extension API |
+
+The retained acceptance tools are `tools/capture_workflow_fixture.py`,
+`tools/compare_workflow_fixtures.py`, and `tools/probe_subscription.py`.
+
+For the tested `000779.SZ` trading day, Big QMT and the existing MiniQMT-derived
+store had all 4,915 tick timestamps in common, including `15:30:00.001`. Prices,
+volume, order-book volume, and transaction count matched (apart from floating-point
+representation); `amount` differed by at most one currency unit. Historical Big QMT
+payloads did not reproduce native `stockStatus`, `pvolume`, or `tickvol` exactly.
+These remain documented deviations: missing structural fields use neutral placeholders
+and must not be treated as data-equivalent to native values.
 
 Unsupported APIs will not be silently emulated. Compatibility details belong in
 [`docs/compatibility.md`](docs/compatibility.md).

@@ -29,8 +29,8 @@ QMT 环境适配，不面向订单簿或逐笔级高频交易。
 | 状态 | 数量 |
 | --- | ---: |
 | 公开 API 覆盖 | 138 / 138 |
-| 已完成行为验证 | 7 |
-| 已实现适配、等待验证 | 117 |
+| 已完成行为验证 | 8 |
+| 已实现适配、等待验证 | 116 |
 | MiniQMT 本地语义不同 | 14 |
 
 官方接口名称、签名、状态和已知差异的完整列表见
@@ -38,16 +38,26 @@ QMT 环境适配，不面向订单簿或逐笔级高频交易。
 
 ### 已实现的核心 API
 
-| API | 状态 |
-| --- | --- |
-| `get_full_tick` | 已通过真实大 QMT 验证 |
-| `get_market_data_ex` | 通过底层 `get_market_data2` 实现 |
-| `get_market_data` | 已实现字段优先的 DataFrame 兼容格式 |
-| `subscribe_quote` / `unsubscribe_quote` | 已通过真实大 QMT 验证 |
-| `get_instrument_detail` | 已通过真实大 QMT 验证 |
-| `get_stock_list_in_sector` | 已实现板块股票池查询 |
-| `download_history_data(2)` | 实验性；依赖 QMT 的 `down_history_data` |
-| `bridge_status` | 项目扩展 API |
+| API | 大 QMT 可调用 | MiniQMT 结构一致 | MiniQMT 数据一致 |
+| --- | --- | --- | --- |
+| `get_full_tick` | 是 | 是 | 核心行情字段已验证 |
+| `get_market_data_ex`（`1d`、`1m`） | 是 | 是 | 单日样本已验证 |
+| `get_market_data_ex`（`tick`） | 是 | 是 | 核心字段已验证；差异见下文 |
+| `get_market_data` | 是 | 是，股票为行、时间为列 | 单日样本已验证 |
+| `subscribe_quote` / `unsubscribe_quote` | 是 | 是 | 当前快照和时间戳已验证 |
+| `get_instrument_detail` | 是 | 已规范化业务所需字段 | 单股票样本已验证 |
+| `get_stock_list_in_sector` | 是 | 股票代码列表 | 样本中大 QMT 多出 10 只较新股票 |
+| `download_history_data(2)` | 是 | 支持完成回调 | 已验证两只股票及 `1d`/`1m`/`tick` |
+| `bridge_status` | 是 | 项目扩展 API | 项目扩展 API |
+
+仓库保留了可重复验收工具：`tools/capture_workflow_fixture.py`、
+`tools/compare_workflow_fixtures.py` 和 `tools/probe_subscription.py`。
+
+在已测的 `000779.SZ` 交易日中，大 QMT 与现有 MiniQMT 业务数据的 4915 个
+Tick 时间戳全部一致，包含 `15:30:00.001`。价格、成交量、盘口量和成交笔数一致
+（仅有浮点尾差），`amount` 最大相差 1 元。大 QMT 历史结果中的 `stockStatus`、
+`pvolume`、`tickvol` 尚不能与原生值完全一致；项目将其明确列为已知差异。缺失的
+结构字段会使用中性占位值，调用方不能将这些占位值视作与原生数据等价。
 
 未支持的 API 不会被静默模拟。兼容性细节见
 [`docs/compatibility.md`](docs/compatibility.md)。
