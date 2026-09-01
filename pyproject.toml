@@ -25,6 +25,9 @@ dev = ["pytest>=7", "ruff>=0.5"]
 [tool.setuptools.packages.find]
 where = ["src"]
 
+[tool.setuptools.package-data]
+xtquant_compat = ["official_xtdata_api.json"]
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 

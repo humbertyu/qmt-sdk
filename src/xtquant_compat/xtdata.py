@@ -5,6 +5,7 @@ import time
 import uuid
 import pandas as pd
 
+from .api_surface import install_missing_api as _install_missing_api
 from .client import get_client
 from .config import configure as configure
 
@@ -123,10 +124,10 @@ def unsubscribe_quote(seq):
     return get_client().unsubscribe(seq)
 
 
-def get_instrument_detail(stock_code, is_detail=False):
+def get_instrument_detail(stock_code, iscomplete=False):
     return get_client().request("get_instrument_detail", {
         "stock_code": stock_code,
-        "is_detail": bool(is_detail),
+        "iscomplete": bool(iscomplete),
     })
 
 
@@ -138,8 +139,8 @@ def get_instrument_type(stock_code, variety_list=None):
     return _request("get_instrument_type", stock_code=stock_code, variety_list=variety_list)
 
 
-def get_stock_type(stock):
-    return _request("get_stock_type", stock=stock)
+def get_stock_type(stock_code, variety_list=None):
+    return _request("get_stock_type", stock_code=stock_code, variety_list=variety_list)
 
 
 def get_stock_list_in_sector(sector_name, real_timetag=-1):
@@ -182,7 +183,6 @@ def bridge_status():
 
 def download_history_data2(
     stock_list, period, start_time="", end_time="", callback=None, incrementally=None,
-    dividend_type="none",
 ):
     # Full-market batches can legitimately take longer than an ordinary query.
     result = get_client().request("download_history_data2", {
@@ -191,7 +191,6 @@ def download_history_data2(
         "start_time": start_time,
         "end_time": end_time,
         "incrementally": incrementally,
-        "dividend_type": dividend_type,
     }, timeout=600)
     if callback is not None:
         callback({"finished": 1, "result": result})
@@ -200,11 +199,10 @@ def download_history_data2(
 
 def download_history_data(
     stock_code, period, start_time="", end_time="", incrementally=None,
-    dividend_type="none",
 ):
     return download_history_data2(
         [stock_code], period, start_time, end_time,
-        incrementally=incrementally, dividend_type=dividend_type,
+        incrementally=incrementally,
     )
 
 
@@ -394,3 +392,6 @@ def run():
             time.sleep(1)
     except KeyboardInterrupt:
         return None
+
+
+OFFICIAL_API_SPEC = _install_missing_api(globals(), _request)

@@ -101,6 +101,18 @@ def _call_available(ContextInfo, names, args):
     raise NotImplementedError("QMT callable unavailable: %s" % ", ".join(names))
 
 
+def _call_shapes(ContextInfo, names, shapes):
+    last_error = None
+    for args in shapes:
+        try:
+            return _call_available(ContextInfo, names, args)
+        except Exception as exc:
+            last_error = exc
+    if last_error is not None:
+        raise last_error
+    raise NotImplementedError("no call shapes for %s" % names)
+
+
 def _get_market_data(ContextInfo, params):
     fields = params.get("field_list", [])
     stocks = params.get("stock_list", [])
@@ -277,6 +289,28 @@ def _handle(ContextInfo, request):
         if not callable(get_sector):
             raise NotImplementedError("get_stock_list_in_sector unavailable")
         return get_sector(params.get("sector_name", ""))
+    if method == "get_sector_list":
+        return _call_shapes(ContextInfo, "get_sector_list", ((), ("",)))
+    if method == "get_trading_dates":
+        base = (
+            params.get("market"), params.get("start_time", ""),
+            params.get("end_time", ""), params.get("count", -1),
+        )
+        return _call_shapes(ContextInfo, "get_trading_dates", (base, base + ("",)))
+    if method == "get_divid_factors":
+        stock = params.get("stock_code")
+        date = params.get("end_time", "") or params.get("start_time", "")
+        return _call_shapes(
+            ContextInfo, ("get_divid_factors", "getDividFactors"),
+            ((stock, params.get("start_time", ""), params.get("end_time", "")),
+             (stock, date), (stock,)),
+        )
+    if method == "get_etf_info":
+        return _call_shapes(ContextInfo, "get_etf_info", ((), ("",)))
+    if method == "get_stock_type":
+        stock = params.get("stock_code")
+        variety = params.get("variety_list")
+        return _call_shapes(ContextInfo, "get_stock_type", ((stock, variety), (stock,)))
     if method == "subscribe_quote":
         return _subscribe(ContextInfo, request, params)
     if method == "subscribe_quote2":
@@ -299,7 +333,7 @@ def _handle(ContextInfo, request):
 
     simple_calls = {
         "get_instrument_type": (("get_instrument_type",), (params.get("stock_code"), params.get("variety_list"))),
-        "get_stock_type": (("get_stock_type",), (params.get("stock"),)),
+        "get_stock_type": (("get_stock_type",), (params.get("stock_code"), params.get("variety_list"))),
         "get_sector_info": (("get_sector_info",), (params.get("sector_name", ""),)),
         "get_sector_list": (("get_sector_list",), ()),
         "get_trading_dates": (("get_trading_dates",), (params.get("market"), params.get("start_time", ""), params.get("end_time", ""), params.get("count", -1))),
@@ -322,7 +356,10 @@ def _handle(ContextInfo, request):
     if method in simple_calls:
         names, args = simple_calls[method]
         return _call_available(ContextInfo, names, args)
-    raise ValueError("unsupported method: %s" % method)
+    # Generic fallback for the remaining official API surface. The external
+    # adapter serializes parameters in signature order, and Python 3.6 keeps
+    # JSON object insertion order. Availability still depends on this QMT build.
+    return _call_available(ContextInfo, method, tuple(params.values()))
 
 
 def _process_one(ContextInfo, name):

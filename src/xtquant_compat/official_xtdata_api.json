@@ -1,0 +1,2649 @@
+{
+  "source": "installed official xtquant.xtdata",
+  "distribution_version": "250516.1.1",
+  "module_version": "xtquant_250516",
+  "snapshot_date": "2026-09-01",
+  "function_count": 138,
+  "functions": [
+    {
+      "name": "add_sector",
+      "signature": "(sector_name, stock_list)",
+      "parameters": [
+        {
+          "name": "sector_name",
+          "kind": "POSITIONAL_OR_KEYWORD"
+        },
+        {
+          "name": "stock_list",
+          "kind": "POSITIONAL_OR_KEYWORD"
+        }
+      ]
+    },
+    {
+      "name": "bind_formula",
+      "signature": "(request_id, callback=None)",
+      "parameters": [
+        {
+          "name": "request_id",
+          "kind": "POSITIONAL_OR_KEYWORD"
+        },
+        {
+          "name": "callback",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": null
+        }
+      ]
+    },
+    {
+      "name": "bnd_get_amount_change",
+      "signature": "(stock_code, start_time='', end_time='')",
+      "parameters": [
+        {
+          "name": "stock_code",
+          "kind": "POSITIONAL_OR_KEYWORD"
+        },
+        {
+          "name": "start_time",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": ""
+        },
+        {
+          "name": "end_time",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": ""
+        }
+      ]
+    },
+    {
+      "name": "bnd_get_call_info",
+      "signature": "(stock_code, start_time='', end_time='')",
+      "parameters": [
+        {
+          "name": "stock_code",
+          "kind": "POSITIONAL_OR_KEYWORD"
+        },
+        {
+          "name": "start_time",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": ""
+        },
+        {
+          "name": "end_time",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": ""
+        }
+      ]
+    },
+    {
+      "name": "bnd_get_conversion_price",
+      "signature": "(stock_code, start_time='', end_time='')",
+      "parameters": [
+        {
+          "name": "stock_code",
+          "kind": "POSITIONAL_OR_KEYWORD"
+        },
+        {
+          "name": "start_time",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": ""
+        },
+        {
+          "name": "end_time",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": ""
+        }
+      ]
+    },
+    {
+      "name": "bnd_get_put_info",
+      "signature": "(stock_code, start_time='', end_time='')",
+      "parameters": [
+        {
+          "name": "stock_code",
+          "kind": "POSITIONAL_OR_KEYWORD"
+        },
+        {
+          "name": "start_time",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": ""
+        },
+        {
+          "name": "end_time",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": ""
+        }
+      ]
+    },
+    {
+      "name": "call_formula",
+      "signature": "(formula_name, stock_code, period, start_time='', end_time='', count=-1, dividend_type=None, extend_param={})",
+      "parameters": [
+        {
+          "name": "formula_name",
+          "kind": "POSITIONAL_OR_KEYWORD"
+        },
+        {
+          "name": "stock_code",
+          "kind": "POSITIONAL_OR_KEYWORD"
+        },
+        {
+          "name": "period",
+          "kind": "POSITIONAL_OR_KEYWORD"
+        },
+        {
+          "name": "start_time",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": ""
+        },
+        {
+          "name": "end_time",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": ""
+        },
+        {
+          "name": "count",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": -1
+        },
+        {
+          "name": "dividend_type",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": null
+        },
+        {
+          "name": "extend_param",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": {}
+        }
+      ]
+    },
+    {
+      "name": "compute_coming_trading_calendar",
+      "signature": "(market, start_time='', end_time='')",
+      "parameters": [
+        {
+          "name": "market",
+          "kind": "POSITIONAL_OR_KEYWORD"
+        },
+        {
+          "name": "start_time",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": ""
+        },
+        {
+          "name": "end_time",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": ""
+        }
+      ]
+    },
+    {
+      "name": "connect",
+      "signature": "(ip='', port=None, remember_if_success=True)",
+      "parameters": [
+        {
+          "name": "ip",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": ""
+        },
+        {
+          "name": "port",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": null
+        },
+        {
+          "name": "remember_if_success",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": true
+        }
+      ]
+    },
+    {
+      "name": "create_array",
+      "signature": "(shape, dtype_tuple, capsule, size)",
+      "parameters": [
+        {
+          "name": "shape",
+          "kind": "POSITIONAL_OR_KEYWORD"
+        },
+        {
+          "name": "dtype_tuple",
+          "kind": "POSITIONAL_OR_KEYWORD"
+        },
+        {
+          "name": "capsule",
+          "kind": "POSITIONAL_OR_KEYWORD"
+        },
+        {
+          "name": "size",
+          "kind": "POSITIONAL_OR_KEYWORD"
+        }
+      ]
+    },
+    {
+      "name": "create_formula",
+      "signature": "(formula_name, formula_content, formula_params={})",
+      "parameters": [
+        {
+          "name": "formula_name",
+          "kind": "POSITIONAL_OR_KEYWORD"
+        },
+        {
+          "name": "formula_content",
+          "kind": "POSITIONAL_OR_KEYWORD"
+        },
+        {
+          "name": "formula_params",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": {}
+        }
+      ]
+    },
+    {
+      "name": "create_sector",
+      "signature": "(parent_node, sector_name, overwrite=True)",
+      "parameters": [
+        {
+          "name": "parent_node",
+          "kind": "POSITIONAL_OR_KEYWORD"
+        },
+        {
+          "name": "sector_name",
+          "kind": "POSITIONAL_OR_KEYWORD"
+        },
+        {
+          "name": "overwrite",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": true
+        }
+      ]
+    },
+    {
+      "name": "create_sector_folder",
+      "signature": "(parent_node, folder_name, overwrite=True)",
+      "parameters": [
+        {
+          "name": "parent_node",
+          "kind": "POSITIONAL_OR_KEYWORD"
+        },
+        {
+          "name": "folder_name",
+          "kind": "POSITIONAL_OR_KEYWORD"
+        },
+        {
+          "name": "overwrite",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": true
+        }
+      ]
+    },
+    {
+      "name": "datetime_to_timetag",
+      "signature": "(datetime, format='%Y%m%d%H%M%S')",
+      "parameters": [
+        {
+          "name": "datetime",
+          "kind": "POSITIONAL_OR_KEYWORD"
+        },
+        {
+          "name": "format",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": "%Y%m%d%H%M%S"
+        }
+      ]
+    },
+    {
+      "name": "del_formula",
+      "signature": "(formula_name)",
+      "parameters": [
+        {
+          "name": "formula_name",
+          "kind": "POSITIONAL_OR_KEYWORD"
+        }
+      ]
+    },
+    {
+      "name": "disconnect",
+      "signature": "()",
+      "parameters": []
+    },
+    {
+      "name": "download_cb_data",
+      "signature": "()",
+      "parameters": []
+    },
+    {
+      "name": "download_etf_info",
+      "signature": "()",
+      "parameters": []
+    },
+    {
+      "name": "download_financial_data",
+      "signature": "(stock_list, table_list=[], start_time='', end_time='', incrementally=None)",
+      "parameters": [
+        {
+          "name": "stock_list",
+          "kind": "POSITIONAL_OR_KEYWORD"
+        },
+        {
+          "name": "table_list",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": []
+        },
+        {
+          "name": "start_time",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": ""
+        },
+        {
+          "name": "end_time",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": ""
+        },
+        {
+          "name": "incrementally",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": null
+        }
+      ]
+    },
+    {
+      "name": "download_financial_data2",
+      "signature": "(stock_list, table_list=[], start_time='', end_time='', callback=None)",
+      "parameters": [
+        {
+          "name": "stock_list",
+          "kind": "POSITIONAL_OR_KEYWORD"
+        },
+        {
+          "name": "table_list",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": []
+        },
+        {
+          "name": "start_time",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": ""
+        },
+        {
+          "name": "end_time",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": ""
+        },
+        {
+          "name": "callback",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": null
+        }
+      ]
+    },
+    {
+      "name": "download_his_st_data",
+      "signature": "()",
+      "parameters": []
+    },
+    {
+      "name": "download_history_contracts",
+      "signature": "(incrementally=True)",
+      "parameters": [
+        {
+          "name": "incrementally",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": true
+        }
+      ]
+    },
+    {
+      "name": "download_history_data",
+      "signature": "(stock_code, period, start_time='', end_time='', incrementally=None)",
+      "parameters": [
+        {
+          "name": "stock_code",
+          "kind": "POSITIONAL_OR_KEYWORD"
+        },
+        {
+          "name": "period",
+          "kind": "POSITIONAL_OR_KEYWORD"
+        },
+        {
+          "name": "start_time",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": ""
+        },
+        {
+          "name": "end_time",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": ""
+        },
+        {
+          "name": "incrementally",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": null
+        }
+      ]
+    },
+    {
+      "name": "download_history_data2",
+      "signature": "(stock_list, period, start_time='', end_time='', callback=None, incrementally=None)",
+      "parameters": [
+        {
+          "name": "stock_list",
+          "kind": "POSITIONAL_OR_KEYWORD"
+        },
+        {
+          "name": "period",
+          "kind": "POSITIONAL_OR_KEYWORD"
+        },
+        {
+          "name": "start_time",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": ""
+        },
+        {
+          "name": "end_time",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": ""
+        },
+        {
+          "name": "callback",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": null
+        },
+        {
+          "name": "incrementally",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": null
+        }
+      ]
+    },
+    {
+      "name": "download_holiday_data",
+      "signature": "(incrementally=True)",
+      "parameters": [
+        {
+          "name": "incrementally",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": true
+        }
+      ]
+    },
+    {
+      "name": "download_index_weight",
+      "signature": "()",
+      "parameters": []
+    },
+    {
+      "name": "download_metatable_data",
+      "signature": "()",
+      "parameters": []
+    },
+    {
+      "name": "download_sector_data",
+      "signature": "()",
+      "parameters": []
+    },
+    {
+      "name": "download_tabular_data",
+      "signature": "(stock_list, period, start_time='', end_time='', incrementally=None, download_type='validationbypage', source='')",
+      "parameters": [
+        {
+          "name": "stock_list",
+          "kind": "POSITIONAL_OR_KEYWORD"
+        },
+        {
+          "name": "period",
+          "kind": "POSITIONAL_OR_KEYWORD"
+        },
+        {
+          "name": "start_time",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": ""
+        },
+        {
+          "name": "end_time",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": ""
+        },
+        {
+          "name": "incrementally",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": null
+        },
+        {
+          "name": "download_type",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": "validationbypage"
+        },
+        {
+          "name": "source",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": ""
+        }
+      ]
+    },
+    {
+      "name": "fetch_quote_server_from_config",
+      "signature": "(root_path, key_list)",
+      "parameters": [
+        {
+          "name": "root_path",
+          "kind": "POSITIONAL_OR_KEYWORD"
+        },
+        {
+          "name": "key_list",
+          "kind": "POSITIONAL_OR_KEYWORD"
+        }
+      ]
+    },
+    {
+      "name": "gen_factor_index",
+      "signature": "(data_name, formula_name, vars, sector_list, start_time='', end_time='', period='1d', dividend_type='none')",
+      "parameters": [
+        {
+          "name": "data_name",
+          "kind": "POSITIONAL_OR_KEYWORD"
+        },
+        {
+          "name": "formula_name",
+          "kind": "POSITIONAL_OR_KEYWORD"
+        },
+        {
+          "name": "vars",
+          "kind": "POSITIONAL_OR_KEYWORD"
+        },
+        {
+          "name": "sector_list",
+          "kind": "POSITIONAL_OR_KEYWORD"
+        },
+        {
+          "name": "start_time",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": ""
+        },
+        {
+          "name": "end_time",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": ""
+        },
+        {
+          "name": "period",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": "1d"
+        },
+        {
+          "name": "dividend_type",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": "none"
+        }
+      ]
+    },
+    {
+      "name": "generate_index_data",
+      "signature": "(formula_name, formula_param={}, stock_list=[], period='1d', dividend_type='none', start_time='', end_time='', fill_mode='fixed', fill_value=nan, result_path=None)",
+      "parameters": [
+        {
+          "name": "formula_name",
+          "kind": "POSITIONAL_OR_KEYWORD"
+        },
+        {
+          "name": "formula_param",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": {}
+        },
+        {
+          "name": "stock_list",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": []
+        },
+        {
+          "name": "period",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": "1d"
+        },
+        {
+          "name": "dividend_type",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": "none"
+        },
+        {
+          "name": "start_time",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": ""
+        },
+        {
+          "name": "end_time",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": ""
+        },
+        {
+          "name": "fill_mode",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": "fixed"
+        },
+        {
+          "name": "fill_value",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": NaN
+        },
+        {
+          "name": "result_path",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": null
+        }
+      ]
+    },
+    {
+      "name": "getDividFactors",
+      "signature": "(*args, **kwargs)",
+      "parameters": [
+        {
+          "name": "args",
+          "kind": "VAR_POSITIONAL"
+        },
+        {
+          "name": "kwargs",
+          "kind": "VAR_KEYWORD"
+        }
+      ]
+    },
+    {
+      "name": "get_all_kline_trading_periods",
+      "signature": "()",
+      "parameters": []
+    },
+    {
+      "name": "get_all_sub_info",
+      "signature": "()",
+      "parameters": []
+    },
+    {
+      "name": "get_all_trading_periods",
+      "signature": "()",
+      "parameters": []
+    },
+    {
+      "name": "get_authorized_market_list",
+      "signature": "()",
+      "parameters": []
+    },
+    {
+      "name": "get_broker_queue_data",
+      "signature": "(stock_list=[], start_time='', end_time='', count=-1, show_broker_name=False)",
+      "parameters": [
+        {
+          "name": "stock_list",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": []
+        },
+        {
+          "name": "start_time",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": ""
+        },
+        {
+          "name": "end_time",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": ""
+        },
+        {
+          "name": "count",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": -1
+        },
+        {
+          "name": "show_broker_name",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": false
+        }
+      ]
+    },
+    {
+      "name": "get_cb_info",
+      "signature": "(stockcode)",
+      "parameters": [
+        {
+          "name": "stockcode",
+          "kind": "POSITIONAL_OR_KEYWORD"
+        }
+      ]
+    },
+    {
+      "name": "get_client",
+      "signature": "()",
+      "parameters": []
+    },
+    {
+      "name": "get_current_connect_sub_info",
+      "signature": "()",
+      "parameters": []
+    },
+    {
+      "name": "get_data_dir",
+      "signature": "()",
+      "parameters": []
+    },
+    {
+      "name": "get_divid_factors",
+      "signature": "(stock_code, start_time='', end_time='')",
+      "parameters": [
+        {
+          "name": "stock_code",
+          "kind": "POSITIONAL_OR_KEYWORD"
+        },
+        {
+          "name": "start_time",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": ""
+        },
+        {
+          "name": "end_time",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": ""
+        }
+      ]
+    },
+    {
+      "name": "get_etf_info",
+      "signature": "()",
+      "parameters": []
+    },
+    {
+      "name": "get_field_list",
+      "signature": "(metaid)",
+      "parameters": [
+        {
+          "name": "metaid",
+          "kind": "POSITIONAL_OR_KEYWORD"
+        }
+      ]
+    },
+    {
+      "name": "get_financial_data",
+      "signature": "(stock_list, table_list=[], start_time='', end_time='', report_type='report_time')",
+      "parameters": [
+        {
+          "name": "stock_list",
+          "kind": "POSITIONAL_OR_KEYWORD"
+        },
+        {
+          "name": "table_list",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": []
+        },
+        {
+          "name": "start_time",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": ""
+        },
+        {
+          "name": "end_time",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": ""
+        },
+        {
+          "name": "report_type",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": "report_time"
+        }
+      ]
+    },
+    {
+      "name": "get_financial_data_ori",
+      "signature": "(stock_list, table_list=[], start_time='', end_time='', report_type='report_time')",
+      "parameters": [
+        {
+          "name": "stock_list",
+          "kind": "POSITIONAL_OR_KEYWORD"
+        },
+        {
+          "name": "table_list",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": []
+        },
+        {
+          "name": "start_time",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": ""
+        },
+        {
+          "name": "end_time",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": ""
+        },
+        {
+          "name": "report_type",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": "report_time"
+        }
+      ]
+    },
+    {
+      "name": "get_formula_result",
+      "signature": "(request_id, start_time='', end_time='', count=-1, timeout_second=-1)",
+      "parameters": [
+        {
+          "name": "request_id",
+          "kind": "POSITIONAL_OR_KEYWORD"
+        },
+        {
+          "name": "start_time",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": ""
+        },
+        {
+          "name": "end_time",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": ""
+        },
+        {
+          "name": "count",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": -1
+        },
+        {
+          "name": "timeout_second",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": -1
+        }
+      ]
+    },
+    {
+      "name": "get_formulas",
+      "signature": "()",
+      "parameters": []
+    },
+    {
+      "name": "get_full_kline",
+      "signature": "(field_list=[], stock_list=[], period='1m', start_time='', end_time='', count=1, dividend_type='none', fill_data=True)",
+      "parameters": [
+        {
+          "name": "field_list",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": []
+        },
+        {
+          "name": "stock_list",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": []
+        },
+        {
+          "name": "period",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": "1m"
+        },
+        {
+          "name": "start_time",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": ""
+        },
+        {
+          "name": "end_time",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": ""
+        },
+        {
+          "name": "count",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": 1
+        },
+        {
+          "name": "dividend_type",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": "none"
+        },
+        {
+          "name": "fill_data",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": true
+        }
+      ]
+    },
+    {
+      "name": "get_full_tick",
+      "signature": "(code_list)",
+      "parameters": [
+        {
+          "name": "code_list",
+          "kind": "POSITIONAL_OR_KEYWORD"
+        }
+      ]
+    },
+    {
+      "name": "get_fullspeed_orderbook",
+      "signature": "(code_list)",
+      "parameters": [
+        {
+          "name": "code_list",
+          "kind": "POSITIONAL_OR_KEYWORD"
+        }
+      ]
+    },
+    {
+      "name": "get_his_option_list",
+      "signature": "(undl_code, dedate)",
+      "parameters": [
+        {
+          "name": "undl_code",
+          "kind": "POSITIONAL_OR_KEYWORD"
+        },
+        {
+          "name": "dedate",
+          "kind": "POSITIONAL_OR_KEYWORD"
+        }
+      ]
+    },
+    {
+      "name": "get_his_option_list_batch",
+      "signature": "(undl_code, start_time='', end_time='')",
+      "parameters": [
+        {
+          "name": "undl_code",
+          "kind": "POSITIONAL_OR_KEYWORD"
+        },
+        {
+          "name": "start_time",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": ""
+        },
+        {
+          "name": "end_time",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": ""
+        }
+      ]
+    },
+    {
+      "name": "get_his_st_data",
+      "signature": "(stock_code)",
+      "parameters": [
+        {
+          "name": "stock_code",
+          "kind": "POSITIONAL_OR_KEYWORD"
+        }
+      ]
+    },
+    {
+      "name": "get_hk_broker_dict",
+      "signature": "()",
+      "parameters": []
+    },
+    {
+      "name": "get_holidays",
+      "signature": "()",
+      "parameters": []
+    },
+    {
+      "name": "get_index_weight",
+      "signature": "(index_code)",
+      "parameters": [
+        {
+          "name": "index_code",
+          "kind": "POSITIONAL_OR_KEYWORD"
+        }
+      ]
+    },
+    {
+      "name": "get_instrument_detail",
+      "signature": "(stock_code, iscomplete=False)",
+      "parameters": [
+        {
+          "name": "stock_code",
+          "kind": "POSITIONAL_OR_KEYWORD"
+        },
+        {
+          "name": "iscomplete",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": false
+        }
+      ]
+    },
+    {
+      "name": "get_instrument_detail_list",
+      "signature": "(stock_list, iscomplete=False)",
+      "parameters": [
+        {
+          "name": "stock_list",
+          "kind": "POSITIONAL_OR_KEYWORD"
+        },
+        {
+          "name": "iscomplete",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": false
+        }
+      ]
+    },
+    {
+      "name": "get_instrument_type",
+      "signature": "(stock_code, variety_list=None)",
+      "parameters": [
+        {
+          "name": "stock_code",
+          "kind": "POSITIONAL_OR_KEYWORD"
+        },
+        {
+          "name": "variety_list",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": null
+        }
+      ]
+    },
+    {
+      "name": "get_ipo_info",
+      "signature": "(start_time='', end_time='')",
+      "parameters": [
+        {
+          "name": "start_time",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": ""
+        },
+        {
+          "name": "end_time",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": ""
+        }
+      ]
+    },
+    {
+      "name": "get_kline_trading_period",
+      "signature": "(stock_code)",
+      "parameters": [
+        {
+          "name": "stock_code",
+          "kind": "POSITIONAL_OR_KEYWORD"
+        }
+      ]
+    },
+    {
+      "name": "get_l2_order",
+      "signature": "(field_list=[], stock_code='', start_time='', end_time='', count=-1)",
+      "parameters": [
+        {
+          "name": "field_list",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": []
+        },
+        {
+          "name": "stock_code",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": ""
+        },
+        {
+          "name": "start_time",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": ""
+        },
+        {
+          "name": "end_time",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": ""
+        },
+        {
+          "name": "count",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": -1
+        }
+      ]
+    },
+    {
+      "name": "get_l2_quote",
+      "signature": "(field_list=[], stock_code='', start_time='', end_time='', count=-1)",
+      "parameters": [
+        {
+          "name": "field_list",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": []
+        },
+        {
+          "name": "stock_code",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": ""
+        },
+        {
+          "name": "start_time",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": ""
+        },
+        {
+          "name": "end_time",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": ""
+        },
+        {
+          "name": "count",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": -1
+        }
+      ]
+    },
+    {
+      "name": "get_l2_transaction",
+      "signature": "(field_list=[], stock_code='', start_time='', end_time='', count=-1)",
+      "parameters": [
+        {
+          "name": "field_list",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": []
+        },
+        {
+          "name": "stock_code",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": ""
+        },
+        {
+          "name": "start_time",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": ""
+        },
+        {
+          "name": "end_time",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": ""
+        },
+        {
+          "name": "count",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": -1
+        }
+      ]
+    },
+    {
+      "name": "get_l2thousand_queue",
+      "signature": "(stock_code, gear_num=None, price=None)",
+      "parameters": [
+        {
+          "name": "stock_code",
+          "kind": "POSITIONAL_OR_KEYWORD"
+        },
+        {
+          "name": "gear_num",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": null
+        },
+        {
+          "name": "price",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": null
+        }
+      ]
+    },
+    {
+      "name": "get_local_data",
+      "signature": "(field_list=[], stock_list=[], period='1d', start_time='', end_time='', count=-1, dividend_type='none', fill_data=True, data_dir=None)",
+      "parameters": [
+        {
+          "name": "field_list",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": []
+        },
+        {
+          "name": "stock_list",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": []
+        },
+        {
+          "name": "period",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": "1d"
+        },
+        {
+          "name": "start_time",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": ""
+        },
+        {
+          "name": "end_time",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": ""
+        },
+        {
+          "name": "count",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": -1
+        },
+        {
+          "name": "dividend_type",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": "none"
+        },
+        {
+          "name": "fill_data",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": true
+        },
+        {
+          "name": "data_dir",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": null
+        }
+      ]
+    },
+    {
+      "name": "get_main_contract",
+      "signature": "(code_market: str, start_time: str = '', end_time: str = '')",
+      "parameters": [
+        {
+          "name": "code_market",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "annotation": "str"
+        },
+        {
+          "name": "start_time",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": "",
+          "annotation": "str"
+        },
+        {
+          "name": "end_time",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": "",
+          "annotation": "str"
+        }
+      ]
+    },
+    {
+      "name": "get_market_data",
+      "signature": "(field_list=[], stock_list=[], period='1d', start_time='', end_time='', count=-1, dividend_type='none', fill_data=True)",
+      "parameters": [
+        {
+          "name": "field_list",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": []
+        },
+        {
+          "name": "stock_list",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": []
+        },
+        {
+          "name": "period",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": "1d"
+        },
+        {
+          "name": "start_time",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": ""
+        },
+        {
+          "name": "end_time",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": ""
+        },
+        {
+          "name": "count",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": -1
+        },
+        {
+          "name": "dividend_type",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": "none"
+        },
+        {
+          "name": "fill_data",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": true
+        }
+      ]
+    },
+    {
+      "name": "get_market_data3",
+      "signature": "(field_list=[], stock_list=[], period='1d', start_time='', end_time='', count=-1, dividend_type='none', fill_data=True, enable_read_from_server=True)",
+      "parameters": [
+        {
+          "name": "field_list",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": []
+        },
+        {
+          "name": "stock_list",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": []
+        },
+        {
+          "name": "period",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": "1d"
+        },
+        {
+          "name": "start_time",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": ""
+        },
+        {
+          "name": "end_time",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": ""
+        },
+        {
+          "name": "count",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": -1
+        },
+        {
+          "name": "dividend_type",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": "none"
+        },
+        {
+          "name": "fill_data",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": true
+        },
+        {
+          "name": "enable_read_from_server",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": true
+        }
+      ]
+    },
+    {
+      "name": "get_market_data_ex",
+      "signature": "(field_list=[], stock_list=[], period='1d', start_time='', end_time='', count=-1, dividend_type='none', fill_data=True)",
+      "parameters": [
+        {
+          "name": "field_list",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": []
+        },
+        {
+          "name": "stock_list",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": []
+        },
+        {
+          "name": "period",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": "1d"
+        },
+        {
+          "name": "start_time",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": ""
+        },
+        {
+          "name": "end_time",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": ""
+        },
+        {
+          "name": "count",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": -1
+        },
+        {
+          "name": "dividend_type",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": "none"
+        },
+        {
+          "name": "fill_data",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": true
+        }
+      ]
+    },
+    {
+      "name": "get_market_data_ex_ori",
+      "signature": "(field_list=[], stock_list=[], period='1d', start_time='', end_time='', count=-1, dividend_type='none', fill_data=True, enable_read_from_server=True, data_dir=None)",
+      "parameters": [
+        {
+          "name": "field_list",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": []
+        },
+        {
+          "name": "stock_list",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": []
+        },
+        {
+          "name": "period",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": "1d"
+        },
+        {
+          "name": "start_time",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": ""
+        },
+        {
+          "name": "end_time",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": ""
+        },
+        {
+          "name": "count",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": -1
+        },
+        {
+          "name": "dividend_type",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": "none"
+        },
+        {
+          "name": "fill_data",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": true
+        },
+        {
+          "name": "enable_read_from_server",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": true
+        },
+        {
+          "name": "data_dir",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": null
+        }
+      ]
+    },
+    {
+      "name": "get_market_data_ori",
+      "signature": "(field_list=[], stock_list=[], period='1d', start_time='', end_time='', count=-1, dividend_type='none', fill_data=True, enable_read_from_server=True, data_dir=None)",
+      "parameters": [
+        {
+          "name": "field_list",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": []
+        },
+        {
+          "name": "stock_list",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": []
+        },
+        {
+          "name": "period",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": "1d"
+        },
+        {
+          "name": "start_time",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": ""
+        },
+        {
+          "name": "end_time",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": ""
+        },
+        {
+          "name": "count",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": -1
+        },
+        {
+          "name": "dividend_type",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": "none"
+        },
+        {
+          "name": "fill_data",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": true
+        },
+        {
+          "name": "enable_read_from_server",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": true
+        },
+        {
+          "name": "data_dir",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": null
+        }
+      ]
+    },
+    {
+      "name": "get_market_last_trade_date",
+      "signature": "(market)",
+      "parameters": [
+        {
+          "name": "market",
+          "kind": "POSITIONAL_OR_KEYWORD"
+        }
+      ]
+    },
+    {
+      "name": "get_markets",
+      "signature": "()",
+      "parameters": []
+    },
+    {
+      "name": "get_metatable_config",
+      "signature": "(table)",
+      "parameters": [
+        {
+          "name": "table",
+          "kind": "POSITIONAL_OR_KEYWORD"
+        }
+      ]
+    },
+    {
+      "name": "get_metatable_fields",
+      "signature": "(table)",
+      "parameters": [
+        {
+          "name": "table",
+          "kind": "POSITIONAL_OR_KEYWORD"
+        }
+      ]
+    },
+    {
+      "name": "get_metatable_info",
+      "signature": "(table)",
+      "parameters": [
+        {
+          "name": "table",
+          "kind": "POSITIONAL_OR_KEYWORD"
+        }
+      ]
+    },
+    {
+      "name": "get_metatable_list",
+      "signature": "()",
+      "parameters": []
+    },
+    {
+      "name": "get_option_detail_data",
+      "signature": "(optioncode)",
+      "parameters": [
+        {
+          "name": "optioncode",
+          "kind": "POSITIONAL_OR_KEYWORD"
+        }
+      ]
+    },
+    {
+      "name": "get_option_list",
+      "signature": "(undl_code, dedate, opttype='', isavailavle=False)",
+      "parameters": [
+        {
+          "name": "undl_code",
+          "kind": "POSITIONAL_OR_KEYWORD"
+        },
+        {
+          "name": "dedate",
+          "kind": "POSITIONAL_OR_KEYWORD"
+        },
+        {
+          "name": "opttype",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": ""
+        },
+        {
+          "name": "isavailavle",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": false
+        }
+      ]
+    },
+    {
+      "name": "get_option_undl_data",
+      "signature": "(undl_code_ref)",
+      "parameters": [
+        {
+          "name": "undl_code_ref",
+          "kind": "POSITIONAL_OR_KEYWORD"
+        }
+      ]
+    },
+    {
+      "name": "get_order_rank",
+      "signature": "(code, order_time, order_type, order_price, order_volume, order_left_volume)",
+      "parameters": [
+        {
+          "name": "code",
+          "kind": "POSITIONAL_OR_KEYWORD"
+        },
+        {
+          "name": "order_time",
+          "kind": "POSITIONAL_OR_KEYWORD"
+        },
+        {
+          "name": "order_type",
+          "kind": "POSITIONAL_OR_KEYWORD"
+        },
+        {
+          "name": "order_price",
+          "kind": "POSITIONAL_OR_KEYWORD"
+        },
+        {
+          "name": "order_volume",
+          "kind": "POSITIONAL_OR_KEYWORD"
+        },
+        {
+          "name": "order_left_volume",
+          "kind": "POSITIONAL_OR_KEYWORD"
+        }
+      ]
+    },
+    {
+      "name": "get_period_list",
+      "signature": "()",
+      "parameters": []
+    },
+    {
+      "name": "get_quote_server_config",
+      "signature": "()",
+      "parameters": []
+    },
+    {
+      "name": "get_quote_server_status",
+      "signature": "()",
+      "parameters": []
+    },
+    {
+      "name": "get_sec_main_contract",
+      "signature": "(code_market: str, start_time: str = '', end_time: str = '')",
+      "parameters": [
+        {
+          "name": "code_market",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "annotation": "str"
+        },
+        {
+          "name": "start_time",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": "",
+          "annotation": "str"
+        },
+        {
+          "name": "end_time",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": "",
+          "annotation": "str"
+        }
+      ]
+    },
+    {
+      "name": "get_sector_info",
+      "signature": "(sector_name='')",
+      "parameters": [
+        {
+          "name": "sector_name",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": ""
+        }
+      ]
+    },
+    {
+      "name": "get_sector_list",
+      "signature": "()",
+      "parameters": []
+    },
+    {
+      "name": "get_stock_list_in_sector",
+      "signature": "(sector_name, real_timetag=-1)",
+      "parameters": [
+        {
+          "name": "sector_name",
+          "kind": "POSITIONAL_OR_KEYWORD"
+        },
+        {
+          "name": "real_timetag",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": -1
+        }
+      ]
+    },
+    {
+      "name": "get_stock_type",
+      "signature": "(stock_code, variety_list=None)",
+      "parameters": [
+        {
+          "name": "stock_code",
+          "kind": "POSITIONAL_OR_KEYWORD"
+        },
+        {
+          "name": "variety_list",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": null
+        }
+      ]
+    },
+    {
+      "name": "get_tabular_bson",
+      "signature": "(codes: list, fields: list, period: str, start_time: str, end_time: str, count: int = -1, **kwargs)",
+      "parameters": [
+        {
+          "name": "codes",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "annotation": "list"
+        },
+        {
+          "name": "fields",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "annotation": "list"
+        },
+        {
+          "name": "period",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "annotation": "str"
+        },
+        {
+          "name": "start_time",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "annotation": "str"
+        },
+        {
+          "name": "end_time",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "annotation": "str"
+        },
+        {
+          "name": "count",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": -1,
+          "annotation": "int"
+        },
+        {
+          "name": "kwargs",
+          "kind": "VAR_KEYWORD"
+        }
+      ]
+    },
+    {
+      "name": "get_tabular_data",
+      "signature": "(field_list=[], stock_list=[], period='1d', start_time='', end_time='', count=-1, dividend_type='none', fill_data=True)",
+      "parameters": [
+        {
+          "name": "field_list",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": []
+        },
+        {
+          "name": "stock_list",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": []
+        },
+        {
+          "name": "period",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": "1d"
+        },
+        {
+          "name": "start_time",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": ""
+        },
+        {
+          "name": "end_time",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": ""
+        },
+        {
+          "name": "count",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": -1
+        },
+        {
+          "name": "dividend_type",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": "none"
+        },
+        {
+          "name": "fill_data",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": true
+        }
+      ]
+    },
+    {
+      "name": "get_tabular_formula",
+      "signature": "(codes: list, fields: list, period: str, start_time: str, end_time: str, count: int = -1, dividend_type='none', **kwargs)",
+      "parameters": [
+        {
+          "name": "codes",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "annotation": "list"
+        },
+        {
+          "name": "fields",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "annotation": "list"
+        },
+        {
+          "name": "period",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "annotation": "str"
+        },
+        {
+          "name": "start_time",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "annotation": "str"
+        },
+        {
+          "name": "end_time",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "annotation": "str"
+        },
+        {
+          "name": "count",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": -1,
+          "annotation": "int"
+        },
+        {
+          "name": "dividend_type",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": "none"
+        },
+        {
+          "name": "kwargs",
+          "kind": "VAR_KEYWORD"
+        }
+      ]
+    },
+    {
+      "name": "get_trading_calendar",
+      "signature": "(market, start_time='', end_time='')",
+      "parameters": [
+        {
+          "name": "market",
+          "kind": "POSITIONAL_OR_KEYWORD"
+        },
+        {
+          "name": "start_time",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": ""
+        },
+        {
+          "name": "end_time",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": ""
+        }
+      ]
+    },
+    {
+      "name": "get_trading_contract_list",
+      "signature": "(stockcode, date=None)",
+      "parameters": [
+        {
+          "name": "stockcode",
+          "kind": "POSITIONAL_OR_KEYWORD"
+        },
+        {
+          "name": "date",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": null
+        }
+      ]
+    },
+    {
+      "name": "get_trading_dates",
+      "signature": "(market, start_time='', end_time='', count=-1)",
+      "parameters": [
+        {
+          "name": "market",
+          "kind": "POSITIONAL_OR_KEYWORD"
+        },
+        {
+          "name": "start_time",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": ""
+        },
+        {
+          "name": "end_time",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": ""
+        },
+        {
+          "name": "count",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": -1
+        }
+      ]
+    },
+    {
+      "name": "get_trading_period",
+      "signature": "(stock_code)",
+      "parameters": [
+        {
+          "name": "stock_code",
+          "kind": "POSITIONAL_OR_KEYWORD"
+        }
+      ]
+    },
+    {
+      "name": "get_transactioncount",
+      "signature": "(code_list)",
+      "parameters": [
+        {
+          "name": "code_list",
+          "kind": "POSITIONAL_OR_KEYWORD"
+        }
+      ]
+    },
+    {
+      "name": "get_wp_market_list",
+      "signature": "()",
+      "parameters": []
+    },
+    {
+      "name": "gld",
+      "signature": "(field_list=[], stock_list=[], period='1d', start_time='', end_time='', count=-1, dividend_type='none', fill_data=True, data_dir=None)",
+      "parameters": [
+        {
+          "name": "field_list",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": []
+        },
+        {
+          "name": "stock_list",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": []
+        },
+        {
+          "name": "period",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": "1d"
+        },
+        {
+          "name": "start_time",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": ""
+        },
+        {
+          "name": "end_time",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": ""
+        },
+        {
+          "name": "count",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": -1
+        },
+        {
+          "name": "dividend_type",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": "none"
+        },
+        {
+          "name": "fill_data",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": true
+        },
+        {
+          "name": "data_dir",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": null
+        }
+      ]
+    },
+    {
+      "name": "gmd",
+      "signature": "(field_list=[], stock_list=[], period='1d', start_time='', end_time='', count=-1, dividend_type='none', fill_data=True)",
+      "parameters": [
+        {
+          "name": "field_list",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": []
+        },
+        {
+          "name": "stock_list",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": []
+        },
+        {
+          "name": "period",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": "1d"
+        },
+        {
+          "name": "start_time",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": ""
+        },
+        {
+          "name": "end_time",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": ""
+        },
+        {
+          "name": "count",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": -1
+        },
+        {
+          "name": "dividend_type",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": "none"
+        },
+        {
+          "name": "fill_data",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": true
+        }
+      ]
+    },
+    {
+      "name": "gmd2",
+      "signature": "(field_list=[], stock_list=[], period='1d', start_time='', end_time='', count=-1, dividend_type='none', fill_data=True)",
+      "parameters": [
+        {
+          "name": "field_list",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": []
+        },
+        {
+          "name": "stock_list",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": []
+        },
+        {
+          "name": "period",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": "1d"
+        },
+        {
+          "name": "start_time",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": ""
+        },
+        {
+          "name": "end_time",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": ""
+        },
+        {
+          "name": "count",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": -1
+        },
+        {
+          "name": "dividend_type",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": "none"
+        },
+        {
+          "name": "fill_data",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": true
+        }
+      ]
+    },
+    {
+      "name": "gmd3",
+      "signature": "(field_list=[], stock_list=[], period='1d', start_time='', end_time='', count=-1, dividend_type='none', fill_data=True, enable_read_from_server=True)",
+      "parameters": [
+        {
+          "name": "field_list",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": []
+        },
+        {
+          "name": "stock_list",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": []
+        },
+        {
+          "name": "period",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": "1d"
+        },
+        {
+          "name": "start_time",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": ""
+        },
+        {
+          "name": "end_time",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": ""
+        },
+        {
+          "name": "count",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": -1
+        },
+        {
+          "name": "dividend_type",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": "none"
+        },
+        {
+          "name": "fill_data",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": true
+        },
+        {
+          "name": "enable_read_from_server",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": true
+        }
+      ]
+    },
+    {
+      "name": "gsl",
+      "signature": "(sector_name, real_timetag=-1)",
+      "parameters": [
+        {
+          "name": "sector_name",
+          "kind": "POSITIONAL_OR_KEYWORD"
+        },
+        {
+          "name": "real_timetag",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": -1
+        }
+      ]
+    },
+    {
+      "name": "hello",
+      "signature": "()",
+      "parameters": []
+    },
+    {
+      "name": "import_formula",
+      "signature": "(formula_name, file_path)",
+      "parameters": [
+        {
+          "name": "formula_name",
+          "kind": "POSITIONAL_OR_KEYWORD"
+        },
+        {
+          "name": "file_path",
+          "kind": "POSITIONAL_OR_KEYWORD"
+        }
+      ]
+    },
+    {
+      "name": "is_stock_type",
+      "signature": "(stock, tag)",
+      "parameters": [
+        {
+          "name": "stock",
+          "kind": "POSITIONAL_OR_KEYWORD"
+        },
+        {
+          "name": "tag",
+          "kind": "POSITIONAL_OR_KEYWORD"
+        }
+      ]
+    },
+    {
+      "name": "push_custom_data",
+      "signature": "(meta, datas, coverall=False)",
+      "parameters": [
+        {
+          "name": "meta",
+          "kind": "POSITIONAL_OR_KEYWORD"
+        },
+        {
+          "name": "datas",
+          "kind": "POSITIONAL_OR_KEYWORD"
+        },
+        {
+          "name": "coverall",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": false
+        }
+      ]
+    },
+    {
+      "name": "read_feather",
+      "signature": "(file_path)",
+      "parameters": [
+        {
+          "name": "file_path",
+          "kind": "POSITIONAL_OR_KEYWORD"
+        }
+      ]
+    },
+    {
+      "name": "reconnect",
+      "signature": "(ip='', port=None, remember_if_success=True)",
+      "parameters": [
+        {
+          "name": "ip",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": ""
+        },
+        {
+          "name": "port",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": null
+        },
+        {
+          "name": "remember_if_success",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": true
+        }
+      ]
+    },
+    {
+      "name": "remove_sector",
+      "signature": "(sector_name)",
+      "parameters": [
+        {
+          "name": "sector_name",
+          "kind": "POSITIONAL_OR_KEYWORD"
+        }
+      ]
+    },
+    {
+      "name": "remove_stock_from_sector",
+      "signature": "(sector_name, stock_list)",
+      "parameters": [
+        {
+          "name": "sector_name",
+          "kind": "POSITIONAL_OR_KEYWORD"
+        },
+        {
+          "name": "stock_list",
+          "kind": "POSITIONAL_OR_KEYWORD"
+        }
+      ]
+    },
+    {
+      "name": "reset_market_stock_list",
+      "signature": "(market, datas)",
+      "parameters": [
+        {
+          "name": "market",
+          "kind": "POSITIONAL_OR_KEYWORD"
+        },
+        {
+          "name": "datas",
+          "kind": "POSITIONAL_OR_KEYWORD"
+        }
+      ]
+    },
+    {
+      "name": "reset_market_trading_day_list",
+      "signature": "(market, datas)",
+      "parameters": [
+        {
+          "name": "market",
+          "kind": "POSITIONAL_OR_KEYWORD"
+        },
+        {
+          "name": "datas",
+          "kind": "POSITIONAL_OR_KEYWORD"
+        }
+      ]
+    },
+    {
+      "name": "reset_sector",
+      "signature": "(sector_name, stock_list)",
+      "parameters": [
+        {
+          "name": "sector_name",
+          "kind": "POSITIONAL_OR_KEYWORD"
+        },
+        {
+          "name": "stock_list",
+          "kind": "POSITIONAL_OR_KEYWORD"
+        }
+      ]
+    },
+    {
+      "name": "run",
+      "signature": "()",
+      "parameters": []
+    },
+    {
+      "name": "show_quote_server_status",
+      "signature": "()",
+      "parameters": []
+    },
+    {
+      "name": "subscribe_callback_wrapper",
+      "signature": "(callback)",
+      "parameters": [
+        {
+          "name": "callback",
+          "kind": "POSITIONAL_OR_KEYWORD"
+        }
+      ]
+    },
+    {
+      "name": "subscribe_callback_wrapper_1820",
+      "signature": "(callback)",
+      "parameters": [
+        {
+          "name": "callback",
+          "kind": "POSITIONAL_OR_KEYWORD"
+        }
+      ]
+    },
+    {
+      "name": "subscribe_callback_wrapper_convert",
+      "signature": "(callback, metaid)",
+      "parameters": [
+        {
+          "name": "callback",
+          "kind": "POSITIONAL_OR_KEYWORD"
+        },
+        {
+          "name": "metaid",
+          "kind": "POSITIONAL_OR_KEYWORD"
+        }
+      ]
+    },
+    {
+      "name": "subscribe_formula",
+      "signature": "(formula_name, stock_code, period, start_time='', end_time='', count=-1, dividend_type=None, extend_param={}, callback=None)",
+      "parameters": [
+        {
+          "name": "formula_name",
+          "kind": "POSITIONAL_OR_KEYWORD"
+        },
+        {
+          "name": "stock_code",
+          "kind": "POSITIONAL_OR_KEYWORD"
+        },
+        {
+          "name": "period",
+          "kind": "POSITIONAL_OR_KEYWORD"
+        },
+        {
+          "name": "start_time",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": ""
+        },
+        {
+          "name": "end_time",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": ""
+        },
+        {
+          "name": "count",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": -1
+        },
+        {
+          "name": "dividend_type",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": null
+        },
+        {
+          "name": "extend_param",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": {}
+        },
+        {
+          "name": "callback",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": null
+        }
+      ]
+    },
+    {
+      "name": "subscribe_l2thousand",
+      "signature": "(stock_code, gear_num=None, callback=None)",
+      "parameters": [
+        {
+          "name": "stock_code",
+          "kind": "POSITIONAL_OR_KEYWORD"
+        },
+        {
+          "name": "gear_num",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": null
+        },
+        {
+          "name": "callback",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": null
+        }
+      ]
+    },
+    {
+      "name": "subscribe_l2thousand_queue",
+      "signature": "(stock_code, callback=None, gear_num=None, price=None)",
+      "parameters": [
+        {
+          "name": "stock_code",
+          "kind": "POSITIONAL_OR_KEYWORD"
+        },
+        {
+          "name": "callback",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": null
+        },
+        {
+          "name": "gear_num",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": null
+        },
+        {
+          "name": "price",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": null
+        }
+      ]
+    },
+    {
+      "name": "subscribe_quote",
+      "signature": "(stock_code, period='1d', start_time='', end_time='', count=0, callback=None)",
+      "parameters": [
+        {
+          "name": "stock_code",
+          "kind": "POSITIONAL_OR_KEYWORD"
+        },
+        {
+          "name": "period",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": "1d"
+        },
+        {
+          "name": "start_time",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": ""
+        },
+        {
+          "name": "end_time",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": ""
+        },
+        {
+          "name": "count",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": 0
+        },
+        {
+          "name": "callback",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": null
+        }
+      ]
+    },
+    {
+      "name": "subscribe_quote2",
+      "signature": "(stock_code, period='1d', start_time='', end_time='', count=0, dividend_type=None, callback=None)",
+      "parameters": [
+        {
+          "name": "stock_code",
+          "kind": "POSITIONAL_OR_KEYWORD"
+        },
+        {
+          "name": "period",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": "1d"
+        },
+        {
+          "name": "start_time",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": ""
+        },
+        {
+          "name": "end_time",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": ""
+        },
+        {
+          "name": "count",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": 0
+        },
+        {
+          "name": "dividend_type",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": null
+        },
+        {
+          "name": "callback",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": null
+        }
+      ]
+    },
+    {
+      "name": "subscribe_whole_quote",
+      "signature": "(code_list, callback=None)",
+      "parameters": [
+        {
+          "name": "code_list",
+          "kind": "POSITIONAL_OR_KEYWORD"
+        },
+        {
+          "name": "callback",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": null
+        }
+      ]
+    },
+    {
+      "name": "supply_history_data",
+      "signature": "(stock_code, period, start_time='', end_time='', incrementally=None)",
+      "parameters": [
+        {
+          "name": "stock_code",
+          "kind": "POSITIONAL_OR_KEYWORD"
+        },
+        {
+          "name": "period",
+          "kind": "POSITIONAL_OR_KEYWORD"
+        },
+        {
+          "name": "start_time",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": ""
+        },
+        {
+          "name": "end_time",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": ""
+        },
+        {
+          "name": "incrementally",
+          "kind": "POSITIONAL_OR_KEYWORD",
+          "default": null
+        }
+      ]
+    },
+    {
+      "name": "t2d",
+      "signature": "(timetag, format)",
+      "parameters": [
+        {
+          "name": "timetag",
+          "kind": "POSITIONAL_OR_KEYWORD"
+        },
+        {
+          "name": "format",
+          "kind": "POSITIONAL_OR_KEYWORD"
+        }
+      ]
+    },
+    {
+      "name": "timetagToDateTime",
+      "signature": "(*args, **kwargs)",
+      "parameters": [
+        {
+          "name": "args",
+          "kind": "VAR_POSITIONAL"
+        },
+        {
+          "name": "kwargs",
+          "kind": "VAR_KEYWORD"
+        }
+      ]
+    },
+    {
+      "name": "timetag_to_datetime",
+      "signature": "(timetag, format)",
+      "parameters": [
+        {
+          "name": "timetag",
+          "kind": "POSITIONAL_OR_KEYWORD"
+        },
+        {
+          "name": "format",
+          "kind": "POSITIONAL_OR_KEYWORD"
+        }
+      ]
+    },
+    {
+      "name": "try_except",
+      "signature": "(func)",
+      "parameters": [
+        {
+          "name": "func",
+          "kind": "POSITIONAL_OR_KEYWORD"
+        }
+      ]
+    },
+    {
+      "name": "unsubscribe_formula",
+      "signature": "(request_id)",
+      "parameters": [
+        {
+          "name": "request_id",
+          "kind": "POSITIONAL_OR_KEYWORD"
+        }
+      ]
+    },
+    {
+      "name": "unsubscribe_quote",
+      "signature": "(seq)",
+      "parameters": [
+        {
+          "name": "seq",
+          "kind": "POSITIONAL_OR_KEYWORD"
+        }
+      ]
+    },
+    {
+      "name": "watch_quote_server_status",
+      "signature": "(callback)",
+      "parameters": [
+        {
+          "name": "callback",
+          "kind": "POSITIONAL_OR_KEYWORD"
+        }
+      ]
+    },
+    {
+      "name": "watch_xtquant_status",
+      "signature": "(callback)",
+      "parameters": [
+        {
+          "name": "callback",
+          "kind": "POSITIONAL_OR_KEYWORD"
+        }
+      ]
+    },
+    {
+      "name": "write_feather",
+      "signature": "(dest_path, param, df)",
+      "parameters": [
+        {
+          "name": "dest_path",
+          "kind": "POSITIONAL_OR_KEYWORD"
+        },
+        {
+          "name": "param",
+          "kind": "POSITIONAL_OR_KEYWORD"
+        },
+        {
+          "name": "df",
+          "kind": "POSITIONAL_OR_KEYWORD"
+        }
+      ]
+    }
+  ]
+}
