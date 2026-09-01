@@ -32,24 +32,28 @@ class FileBridgeClient:
         }
         atomic_write_json(os.path.join(self.config.root, "requests", filename), payload)
         deadline = time.monotonic() + (self.config.timeout if timeout is None else float(timeout))
-        while time.monotonic() < deadline:
-            for folder in ("responses", "errors"):
-                path = os.path.join(self.config.root, folder, filename)
-                if not os.path.exists(path):
-                    continue
-                try:
-                    result = read_json(path)
-                except (OSError, ValueError, json.JSONDecodeError):
-                    time.sleep(min(self.config.poll_interval, 0.05))
-                    continue
-                try:
-                    os.remove(path)
-                except OSError:
-                    pass
-                if folder == "errors" or not result.get("ok", False):
-                    raise BridgeRemoteError(result.get("error") or "unknown QMT bridge error")
-                return result.get("data")
-            time.sleep(self.config.poll_interval)
+        try:
+            while time.monotonic() < deadline:
+                for folder in ("responses", "errors"):
+                    path = os.path.join(self.config.root, folder, filename)
+                    if not os.path.exists(path):
+                        continue
+                    try:
+                        result = read_json(path)
+                    except (OSError, ValueError, json.JSONDecodeError):
+                        time.sleep(min(self.config.poll_interval, 0.05))
+                        continue
+                    try:
+                        os.remove(path)
+                    except OSError:
+                        pass
+                    if folder == "errors" or not result.get("ok", False):
+                        raise BridgeRemoteError(result.get("error") or "unknown QMT bridge error")
+                    return result.get("data")
+                time.sleep(self.config.poll_interval)
+        except KeyboardInterrupt:
+            self.cancel(request_id)
+            raise
         self.cancel(request_id)
         raise BridgeTimeoutError("timeout waiting for %s (%s)" % (method, request_id))
 
