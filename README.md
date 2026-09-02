@@ -31,6 +31,13 @@ The step-by-step checklist for adding another API is in the
 Unsupported or unverified APIs are marked explicitly and are not silently claimed as
 compatible.
 
+## Current scope
+
+The project currently focuses on query APIs: market data, subscriptions, financial data,
+instrument and metadata queries, plus long-task status and cancellation. Trading APIs
+(order submission, order cancellation, and account/position mutation) are intentionally
+out of scope for this phase.
+
 ## Install the external client
 
 Use an external Python 3.8+ environment. Do not install this package into QMT's bundled
