@@ -442,12 +442,11 @@ def get_local_data(
     field_list=[], stock_list=[], period="1d", start_time="", end_time="", count=-1,
     dividend_type="none", fill_data=True, data_dir=None,
 ):
-    raw = _request(
+    return _request(
         "get_local_data", field_list=list(field_list), stock_list=list(stock_list),
         period=period, start_time=start_time, end_time=end_time, count=count,
         dividend_type=dividend_type, fill_data=fill_data, data_dir=data_dir,
     )
-    return _frames_by_stock(raw)
 
 
 def get_divid_factors(stock_code, start_time="", end_time=""):
@@ -464,22 +463,10 @@ def getDividFactors(*args, **kwargs):
 def get_financial_data(
     stock_list, table_list=[], start_time="", end_time="", report_type="report_time",
 ):
-    expanded = _expand_financial_tables(table_list)
-    raw = _request(
-        "get_financial_data", stock_list=list(stock_list), table_list=expanded,
+    return _request(
+        "get_financial_data", stock_list=list(stock_list), table_list=list(table_list),
         start_time=start_time, end_time=end_time, report_type=report_type,
     )
-    result = _normalize_financial_data(raw)
-    # Big QMT's Python wrapper returns {stock: {field: DataFrame}} for a
-    # single stock/multiple dates; MiniQMT callers expect {stock: {table:
-    # DataFrame}}.  Business callers request one table per read, so combine
-    # the field frames under that table name.
-    if len(table_list or []) == 1 and isinstance(result, dict):
-        table = str(table_list[0]).lower()
-        for stock, fields in list(result.items()):
-            if isinstance(fields, dict) and fields and all(isinstance(v, pd.DataFrame) for v in fields.values()):
-                result[stock] = {table: pd.concat(fields.values(), axis=1)}
-    return result
 
 
 def get_financial_data_ori(
@@ -490,7 +477,7 @@ def get_financial_data_ori(
         "get_financial_data_ori", stock_list=list(stock_list), table_list=_expand_financial_tables(table_list),
         start_time=start_time, end_time=end_time, report_type=report_type,
     )
-    return _normalize_financial_data(raw)
+    return raw
 
 
 def download_financial_data(
