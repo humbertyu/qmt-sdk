@@ -13,6 +13,30 @@ module version `xtquant_250516`, inspected on 2026-09-01.
 
 API surface coverage and behavioral compatibility are intentionally reported separately.
 
+## 实际调用优先适配清单
+
+以下清单来自对一个典型数据同步/实时服务调用面的静态扫描。它只表示外部调用方实际
+使用过的 XtData API，不改变兼容库的 API 范围；已完成的接口仍以本文前面的验收章节和
+下方完整矩阵为准。
+
+| API | 使用场景 | 当前状态 | 下一步验收重点 |
+| --- | --- | --- | --- |
+| `get_stock_list_in_sector` | 获取股票池、订阅池 | ⚠️ 已适配并验收 | 不同板块、顺序和跨重启稳定性 |
+| `get_instrument_detail` | 股票属性、上市日期 | ⚠️ 已适配并验收 | 其他证券类型和实时状态字段 |
+| `get_instrument_detail_list` | 批量股票属性 | ⚠️ 已适配并验收 | 长任务性能和取消恢复 |
+| `get_market_data` | 日线成交额/属性判断 | ⚠️ 已适配并验收 | 缓存缺失时的 `fill_data` 语义 |
+| `get_market_data_ex` | 1d、1m、tick 历史/盘中读取 | ⚠️ 已适配并验收 | tick 个别字段和异常重试 |
+| `download_history_data` | 单股票历史补数 | ⚠️ 已适配 | 返回值、增量参数和错误语义 |
+| `download_history_data2` | 1d、1m、tick 批量补数 | ⚠️ 已适配并验收 | 逐股票进度 callback 和长任务恢复 |
+| `subscribe_quote` | 实时 tick/1m 推送 | ⚠️ 已适配并验收 | 字段全集、断线重连和事件积压 |
+| `unsubscribe_quote` | 取消实时订阅 | ✅ 返回值已统一 | 重复取消和桥接重启后的行为 |
+| `get_trading_calendar` | 交易日历同步 | 🧪 已有适配入口，未完成真实验收 | 历史范围、未来日期、市场参数和空结果 |
+| `get_financial_data` | 财务表查询 | 🧪 已有适配入口，未完成真实验收 | 返回层级、字段 dtype、无数据年度和分批读取 |
+| `download_financial_data2` | 财务数据下载 | 🧪 已有适配入口，未完成真实验收 | 下载完成回调、返回值和下载后读取 |
+
+下一阶段优先处理后三个尚未完成真实验收的 API；其余已标记为 ⚠️ 的行情接口主要进入
+异常、重连和字段补齐阶段，不再重复实现另一套调用方式。
+
 ## 长任务、取消与恢复协议
 
 文件桥接对可能耗时较长的批量详情和历史数据下载统一写入
