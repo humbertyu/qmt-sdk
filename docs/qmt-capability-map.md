@@ -83,6 +83,11 @@ checks all reached the native runtime successfully:
 | `get_history_data` | 0.063 s | `dict`, 0 keys | Call path is valid; the selected history index/date returned no rows. |
 | `get_trading_dates` | 0.116 s | `list`, 0 rows | Call path is valid after initialization; this runtime returned no dates for the sample window. |
 
+Additional 2026 validation with `stockcode="000001.SZ"`,
+`start_date="20260101"`, `end_date="20260902"`, `count=-1` returned 162
+trading dates. The earlier empty result was caused by the probe's narrow
+window/parameter combination, not by an unavailable API.
+
 These results are recorded as “callable, empty runtime result”, not as
 unsupported APIs. The raw probe report is
 `.artifacts/qmt-native-probe-20260902-170533.json`.

@@ -32,7 +32,7 @@ SAMPLES = {
     "get_last_volume": {"stock_code": "000001.SZ"}, "get_total_share": {"stock_code": "000001.SZ"},
     "get_instrument_detail": {"stock_code": "000001.SZ"},
     "get_stock_list_in_sector": {"sector_name": "沪深A股"},
-    "get_trading_dates": {"stockcode": "", "start_date": "20260901", "end_date": "20260902"},
+    "get_trading_dates": {"stockcode": "000001.SZ", "start_date": "20260101", "end_date": "20260902", "count": -1, "period": "1d"},
     "get_st_status": {"stock_code": "000001.SZ"},
     "get_his_st_data": {"stock_code": "000001.SZ"},
     "get_main_contract": {"code_market": "IF.CFFEX"},
