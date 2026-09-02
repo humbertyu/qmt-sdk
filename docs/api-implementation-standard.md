@@ -1,6 +1,6 @@
 # 新增 API 实施标准
 
-本文档定义 `xtquant-compat` 新增或完善一个 `xtquant.xtdata` API 时必须遵循的完整流程。
+本文档定义 `qmt-sdk` 新增或完善一个 `xtquant_compat.xtdata` API 时必须遵循的完整流程。
 它是开发清单和验收标准；具体接口的结果、字段差异和测试数字写入
 [`xtdata-api-matrix.md`](xtdata-api-matrix.md)，不要散落在 README 或业务项目文档中。
 
@@ -20,8 +20,8 @@
 - 单标的还是批量；外部调用是否必须保持一次调用；
 - 是否可能长时间运行；默认超时和最大规模；
 - 空输入、空结果、重复代码和非法参数的行为；
-- 是否需要 Big QMT，是否存在 QMT 端等价接口；
-- MiniQMT 与 Big QMT 的字段、类型、索引、时间和精度差异。
+- 是否存在 QMT 端等价接口；
+- MiniQMT 与 QMT 的字段、类型、索引、时间和精度差异。
 
 普通查询必须保持纯查询语义，不得在查询函数内部偷偷下载或修改用户数据。
 
@@ -35,11 +35,11 @@ xtdata.py（MiniQMT 同名签名）
 client.py（一次请求、超时、取消、事件投递）
     ↓ JSON file protocol
 XTQUANT_COMPAT_BRIDGE.py（QMT 端调用适配）
-    ↓ Big QMT ContextInfo / 全局函数
-Big QMT
+    ↓ QMT ContextInfo / 全局函数
+QMT
 ```
 
-批量 API 的外部签名和请求必须保持批量；如果 Big QMT 只有单项接口，只允许在桥接内部
+批量 API 的外部签名和请求必须保持批量；如果 QMT 只有单项接口，只允许在桥接内部
 循环，并在文档中记录性能原因。不得由业务项目偷偷改变 API 语义。
 
 ## 四、协议要求
@@ -66,7 +66,7 @@ Big QMT
 - DataFrame 的行列方向、索引和列名；
 - 字段顺序、缺失字段和占位值；
 - 日期、整数、浮点和布尔类型；
-- MiniQMT 拼写别名及 Big QMT 扩展字段。
+- MiniQMT 拼写别名及 QMT 扩展字段。
 
 单项和批量接口必须调用同一规范化 helper，避免两个入口返回不同结构。
 

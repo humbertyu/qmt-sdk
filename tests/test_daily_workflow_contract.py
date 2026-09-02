@@ -15,7 +15,9 @@ class StubClient:
                 "000002.SZ": {"time": [1], "amount": [20.0]},
             }
         if method == "download_history_data2":
-            return {"000001.SZ": True}
+            # The compatibility API follows MiniQMT and returns an empty
+            # result-info mapping; completion is reported through callback.
+            return {}
         raise AssertionError(method)
 
 

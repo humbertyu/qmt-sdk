@@ -28,7 +28,7 @@ def test_single_api_document_contains_every_official_function_and_markers():
         "🧪": sum("| 🧪 |" in row for row in rows),
         "➖": sum("| ➖ |" in row for row in rows),
     }
-    assert counts == {"✅": 1, "⚠️": 7, "🧪": 116, "➖": 14}
+    assert counts == {"✅": 1, "⚠️": 8, "🧪": 115, "➖": 14}
     assert sum(counts.values()) == specification["function_count"] == 138
 
 

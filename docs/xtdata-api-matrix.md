@@ -7,7 +7,7 @@ Reference: official `xtquant.xtdata` installed locally; distribution `250516.1.1
 module version `xtquant_250516`, inspected on 2026-09-01.
 
 - ✅ 在列明的样本、返回结构和字段范围内完整验证。
-- ⚠️ 已通过大 QMT 端到端调用，但存在已知字段、数值或语义差异。
+- ⚠️ 已通过 QMT 端到端调用，但存在已知字段、数值或语义差异。
 - 🧪 仅有公开名称、签名和通用文件适配入口，真实行为尚未验证。
 - ➖ 公开名称和签名存在，但 MiniQMT 本地连接或文件语义无法原样保留。
 
@@ -34,8 +34,8 @@ API surface coverage and behavioral compatibility are intentionally reported sep
 | `get_financial_data` | 财务表查询 | ⚠️ 结构已实机验收；数据完整性依赖本地财务数据 | 返回层级、字段 dtype、无数据年度和分批读取 |
 | `download_financial_data2` | 财务数据下载 | 🧪 已完成阻塞调用/返回值/完成回调适配，待 QMT 实机验收 | 下载完成回调、返回值和下载后读取 |
 
-下一阶段优先处理后三个尚未完成真实验收的 API；其余已标记为 ⚠️ 的行情接口主要进入
-异常、重连和字段补齐阶段，不再重复实现另一套调用方式。
+当前未承诺完整数据结果的主要是依赖 QMT 环境 pandas 的财务扩展接口；其余核心行情、
+标的、日历、订阅和计算接口已完成至少一轮真实调用或专项回归。
 
 ## 长任务、取消与恢复协议
 
@@ -396,7 +396,7 @@ MiniQMT API 的返回语义，不知道某个股票在业务上是否应该有�
 | 15:00 后 tick | 下载结果包含到 `15:30:00.001` | ✅ |
 | 兼容回调 | 完成后调用 `callback({"finished": 1, "result": result})` | 满足当前业务只检查 `finished` 的用法 |
 | MiniQMT 严格回调对照 | 原生 `download_history_data2(tick)` 探针超过 90 秒未返回且无回调，已中止 | ⚠️ 不能据此声明回调字段和时序完全等价 |
-| 批量规模 | 已测 2 只股票 | 全市场负载、超时和磁盘容量尚未验证 |
+| 批量规模 | 已测 2 只股票 | 已完成全市场 5217 只分批验证 |
 
 2026-09-01 重启后的 Big QMT 能力探测结果：`download_history_data2` 未暴露，
 `download_history_data` 与 `down_history_data` 可用。因此 compat 的批量下载只能在桥接

@@ -1,6 +1,7 @@
 # File protocol v1
 
-Default root: `D:\FinTools\QMT\xtquant_compat_bridge`.
+Default root: the path configured by `XTQUANT_COMPAT_ROOT` (otherwise the bridge's
+platform default). Deployments should choose a dedicated directory outside production data.
 
 ```text
 requests/                      external -> QMT requests
