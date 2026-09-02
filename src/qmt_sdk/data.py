@@ -344,6 +344,27 @@ def get_weight_in_index(indexcode, stockcode):
     return _request("get_weight_in_index", indexcode=indexcode, stockcode=stockcode)
 
 
+def get_option_detail_data(optioncode):
+    return _request("get_option_detail_data", optioncode=optioncode)
+
+
+def get_option_list(undl_code, dedate, opttype="", isavailable=False):
+    return _request("get_option_list", undl_code=undl_code, dedate=dedate,
+                    opttype=opttype, isavailable=isavailable)
+
+
+def get_option_undl_data(undl_code_ref=""):
+    return _request("get_option_undl_data", undl_code_ref=undl_code_ref)
+
+
+def get_etf_info():
+    return _request("get_etf_info")
+
+
+def get_etf_iopv(stock_code):
+    return _request("get_etf_iopv", stock_code=stock_code)
+
+
 def get_trading_calendar(market, start_time="", end_time=""):
     """Return the official trading-calendar list for a market."""
     return _request(

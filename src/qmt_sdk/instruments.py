@@ -52,3 +52,21 @@ class InstrumentClient:
 
     def get_weight_in_index(self, index_code, stock_code):
         return self._backend.call("get_weight_in_index", index_code, stock_code)
+
+    def get_option_detail_data(self, option_code):
+        return self._backend.call("get_option_detail_data", option_code)
+
+    def get_option_list(self, undl_code, dedate, opttype="", isavailable=False):
+        return self._backend.call("get_option_list", undl_code, dedate, opttype, isavailable)
+
+    def get_option_undl_data(self, undl_code_ref=""):
+        return self._backend.call("get_option_undl_data", undl_code_ref)
+
+    def get_divid_factors(self, stockcode, date=""):
+        return self._backend.call("get_divid_factors", stockcode, date)
+
+    def get_etf_info(self):
+        return self._backend.call("get_etf_info")
+
+    def get_etf_iopv(self, stock_code):
+        return self._backend.call("get_etf_iopv", stock_code)
