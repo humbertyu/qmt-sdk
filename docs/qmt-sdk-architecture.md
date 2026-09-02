@@ -28,6 +28,10 @@ The package is intentionally a single distribution (`qmt-sdk`). The historical
 `xtquant_compat` import is a migration facade over `qmt_sdk`; the dependency
 direction never goes from the core SDK back to the compatibility namespace.
 
+QMT-native functions that do not yet have a typed domain wrapper are available
+through `client.qmt.<function_name>(**params)`. This namespace preserves the
+official QMT parameter vocabulary and raw return payload.
+
 ## Current scope
 
 Supported focus:

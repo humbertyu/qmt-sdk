@@ -5,6 +5,7 @@ from .financial import FinancialClient
 from .instruments import InstrumentClient
 from .jobs import JobClient
 from .market import MarketClient
+from .qmt import QmtQueryClient
 
 
 class QmtClient:
@@ -30,6 +31,7 @@ class QmtClient:
         self.financial = FinancialClient(self.backend)
         self.instruments = InstrumentClient(self.backend)
         self.jobs = JobClient(self.backend)
+        self.qmt = QmtQueryClient(self)
 
     def query(self, method, params=None, timeout=None):
         """Invoke a query capability by bridge method name.

@@ -440,6 +440,10 @@ def _instrument_detail_list(ContextInfo, request):
 def _handle(ContextInfo, request):
     method = request.get("method")
     params = request.get("params") or {}
+    # QmtQueryClient accepts positional calls for direct QMT-style usage.
+    # Keep the list opaque and invoke the runtime exactly as supplied.
+    if "_args" in params:
+        return _call_available(ContextInfo, method, tuple(params.get("_args") or ()))
     if method == "bridge_status":
         return {
             "protocol_version": PROTOCOL_VERSION,
@@ -454,8 +458,21 @@ def _handle(ContextInfo, request):
     if method == "get_full_tick":
         return ContextInfo.get_full_tick(params.get("stock_list", []))
     if method == "get_market_data_ex":
+        if "fields" in params or "stock_code" in params:
+            args = (params.get("fields", []), params.get("stock_code", []),
+                    params.get("period", "follow"), params.get("start_time", ""),
+                    params.get("end_time", ""), params.get("count", -1),
+                    params.get("dividend_type", "follow"), params.get("fill_data", True),
+                    params.get("subscribe", True))
+            return _call_shapes(ContextInfo, method, (args, args[:-1]))
         return _get_market_data(ContextInfo, params)
     if method == "get_market_data":
+        if "fields" in params or "stock_code" in params:
+            args = (params.get("fields", []), params.get("stock_code", []),
+                    params.get("period", "follow"), params.get("start_time", ""),
+                    params.get("end_time", ""), params.get("count", -1),
+                    params.get("dividend_type", "follow"), params.get("fill_data", True))
+            return _call_shapes(ContextInfo, method, (args,))
         return _get_market_data(ContextInfo, params)
     if method == "get_instrument_detail":
         return ContextInfo.get_instrument_detail(params.get("stock_code", ""))
@@ -552,6 +569,57 @@ def _handle(ContextInfo, request):
         ))
     if method == "get_local_data":
         return _get_market_data(ContextInfo, params)
+
+    # QMT-native query signatures.  Keep these positional layouts in the
+    # bridge so callers may use official keyword names without relying on
+    # JSON insertion order (Python 3.6 strategy runtime included).
+    native_shapes = {
+        "get_market_data_ex": ((
+            params.get("fields", params.get("field_list", [])),
+            params.get("stock_code", params.get("stock_list", [])),
+            params.get("period", "follow"), params.get("start_time", ""),
+            params.get("end_time", ""), params.get("count", -1),
+            params.get("dividend_type", "follow"), params.get("fill_data", True),
+            params.get("subscribe", True),
+        ),),
+        "get_market_data": ((
+            params.get("fields", params.get("field_list", [])),
+            params.get("stock_code", params.get("stock_list", [])),
+            params.get("period", "follow"), params.get("start_time", ""),
+            params.get("end_time", ""), params.get("count", -1),
+            params.get("dividend_type", "follow"), params.get("fill_data", True),
+        ),),
+        "get_financial_data": ((
+            params.get("field_list", params.get("fields", [])),
+            params.get("stock_list", params.get("stock_code", [])),
+            params.get("start_time", params.get("start_date", "")),
+            params.get("end_time", params.get("end_date", "")),
+            params.get("report_type", "report_time"),
+            params.get("result_type", "dict"), params.get("is_detail", False),
+        ),),
+        "get_trading_dates": ((
+            params.get("stockcode", params.get("market", "")),
+            params.get("start_date", params.get("start_time", "")),
+            params.get("end_date", params.get("end_time", "")),
+            params.get("count", -1), params.get("period", ""),
+        ),),
+        "get_option_list": ((
+            params.get("undl_code", params.get("stock_code", "")),
+            params.get("dedate", params.get("expire_date", "")),
+            params.get("opttype", ""), params.get("isavailavle", params.get("available", False)),
+        ),),
+        "get_option_detail_data": ((params.get("option_code", params.get("stock_code", "")),),),
+        "get_option_undl_data": ((params.get("option_code", params.get("stock_code", "")),),),
+        "get_st_status": ((params.get("stock_code", params.get("stock_list", [])),),),
+        "get_his_st_data": ((params.get("stock_code", ""), params.get("start_time", ""), params.get("end_time", "")),),
+        "get_main_contract": ((params.get("exchange", params.get("market", "")), params.get("product", params.get("variety", ""))),),
+        "get_contract_multiplier": ((params.get("stock_code", params.get("contract", "")),),),
+        "get_contract_expire_date": ((params.get("stock_code", params.get("contract", "")),),),
+        "get_his_contract_list": ((params.get("exchange", params.get("market", "")), params.get("product", params.get("variety", "")), params.get("start_time", ""), params.get("end_time", "")),),
+        "get_weight_in_index": ((params.get("index_code", params.get("stock_code", "")), params.get("stock_list", params.get("stocks", []))),),
+    }
+    if method in native_shapes:
+        return _call_shapes(ContextInfo, method, native_shapes[method])
 
     simple_calls = {
         "get_instrument_type": (("get_instrument_type",), (params.get("stock_code"), params.get("variety_list"))),

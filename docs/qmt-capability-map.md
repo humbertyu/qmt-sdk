@@ -47,3 +47,24 @@ After signature, return structure, error behavior, and performance are
 validated, it becomes a typed method in the appropriate domain client. It is
 added to `xtquant_compat` only if a MiniQMT equivalent exists. This prevents
 QMT-only features from being distorted by compatibility requirements.
+
+## Native query acceptance checklist
+
+The bridge accepts documented QMT keyword names and positional arguments for
+the official functions below. Runtime availability and whether a result is
+non-empty still depend on QMT version, local data, permissions, and instrument.
+
+| Function group | Dispatch | Acceptance notes |
+| --- | --- | --- |
+| Market, history, local data | ✅ | Native parameter order is mapped; `get_full_tick` is latest snapshot only. |
+| Quote/formula subscriptions | ✅ | Subscribe/unsubscribe and file-delivered callbacks are implemented. |
+| Scalar market queries (`get_svol`, `get_bvol`, turnover, ETF, northbound/HK) | ✅ | Scalar samples verified where data existed; turnover wrapper may require pandas. |
+| Financial (`get_financial_data`, raw) | ✅ | Field-list/stock-list order preserved; raw/turnover official wrappers may require pandas. |
+| Instruments, contracts, options | ✅ | Signatures mapped; values depend on the local universe and permissions. |
+| Corporate actions, index weights, sectors, calendar | ✅ | Official parameter aliases mapped; empty results are runtime/data conditions. |
+| Formula calculation (`bsm_price`, `bsm_iv`, formula calls) | ✅ | Calculation samples verified; formula APIs require configured formulas. |
+
+For each acceptance run record QMT version, exact parameters, elapsed time,
+result type, row/count information, and exception text. An empty result is not
+treated as an implementation failure. New functions must be added to this map
+and to the automated probe before being promoted to a typed domain method.
