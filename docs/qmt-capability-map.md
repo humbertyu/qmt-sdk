@@ -122,6 +122,7 @@ and preserve the native QMT columnar result.
 | --- | --- | --- | ---: |
 | `client.market.subscribe_quote` | `000001.SZ`, `tick`, 8-second listen | Subscription id `1`; 1 event received with `{symbol: [tick]}` shape | 0.110 s to subscribe |
 | `client.market.unsubscribe_quote` | id `1` | Returned native `None`; subscription stopped | immediate |
+| `client.market.subscribe_whole_quote` | `000001.SZ`, `600000.SH`, 8-second listen | Subscription id `2`; subscribe/unsubscribe path succeeded, no event during the post-market window | 0.115 s to subscribe |
 | `client.market.download_history_data` | one symbol, `1d`, `20260902` | Completed with `{}` | 0.169 s |
 | `client.market.download_history_data2` | one symbol, `1d`, `20260902` | Completed with `{}` | 0.168 s |
 
