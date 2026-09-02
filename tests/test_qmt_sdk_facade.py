@@ -23,7 +23,11 @@ def test_domain_clients_share_one_backend():
     assert client.jobs.bridge_status() == "bridge_status"
     assert client.instruments.get_markets() == "get_markets"
     assert client.market.download_history_data("000001.SZ", "1d") == "download_history_data"
+    assert client.market.get_market_data_ex(["close"], ["000001.SZ"]) == "get_market_data_ex"
+    assert client.instruments.get_st_status("000001.SZ") == "get_st_status"
+    assert client.financial.get_last_volume("000001.SZ") == "get_last_volume"
     assert [call[0] for call in backend.calls] == [
         "get_full_tick", "get_financial_data", "get_instrument_detail", "bridge_status",
         "get_markets", "download_history_data",
+        "get_market_data_ex", "get_st_status", "get_last_volume",
     ]

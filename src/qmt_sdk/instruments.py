@@ -31,3 +31,24 @@ class InstrumentClient:
 
     def get_etf_info(self, *args, **kwargs):
         return self._backend.call("get_etf_info", *args, **kwargs)
+
+    def get_st_status(self, stock_code):
+        return self._backend.call("get_st_status", stock_code)
+
+    def get_his_st_data(self, stock_code):
+        return self._backend.call("get_his_st_data", stock_code)
+
+    def get_main_contract(self, code_market, start_time="", end_time=""):
+        return self._backend.call("get_main_contract", code_market, start_time, end_time)
+
+    def get_contract_multiplier(self, stock_code):
+        return self._backend.call("get_contract_multiplier", stock_code)
+
+    def get_contract_expire_date(self, stock_code):
+        return self._backend.call("get_contract_expire_date", stock_code)
+
+    def get_his_contract_list(self, code_market):
+        return self._backend.call("get_his_contract_list", code_market)
+
+    def get_weight_in_index(self, index_code, stock_code):
+        return self._backend.call("get_weight_in_index", index_code, stock_code)
