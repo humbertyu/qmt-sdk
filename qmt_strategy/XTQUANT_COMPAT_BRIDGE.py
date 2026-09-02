@@ -468,22 +468,29 @@ def _handle(ContextInfo, request):
         return ContextInfo.get_full_tick(params.get("stock_code", params.get("stock_list", [])))
     if method == "get_market_data_ex":
         if "fields" in params or "stock_code" in params:
-            args = (params.get("fields", []), params.get("stock_code", []),
-                    params.get("period", "follow"), params.get("start_time", ""),
-                    params.get("end_time", ""), params.get("count", -1),
-                    params.get("dividend_type", "follow"), params.get("fill_data", True),
-                    params.get("subscribe", True))
-            return _call_shapes(ContextInfo, method, (args, args[:-1]))
+            return _get_market_data(ContextInfo, {
+                "field_list": params.get("fields", []),
+                "stock_list": params.get("stock_code", []),
+                "period": params.get("period", "follow"),
+                "start_time": params.get("start_time", ""),
+                "end_time": params.get("end_time", ""),
+                "count": params.get("count", -1),
+                "dividend_type": params.get("dividend_type", "follow"),
+                "fill_data": params.get("fill_data", True),
+            })
         return _get_market_data(ContextInfo, params)
     if method == "get_market_data":
         if "fields" in params or "stock_code" in params:
-            base = (params.get("fields", []), params.get("stock_code", []),
-                    params.get("period", "follow"), params.get("start_time", ""),
-                    params.get("end_time", ""))
-            return _call_shapes(ContextInfo, method, (
-                base + (params.get("fill_data", True), params.get("dividend_type", "follow"), params.get("count", -1)),
-                base + (params.get("count", -1), params.get("dividend_type", "follow"), params.get("fill_data", True)),
-            ))
+            return _get_market_data(ContextInfo, {
+                "field_list": params.get("fields", []),
+                "stock_list": params.get("stock_code", []),
+                "period": params.get("period", "follow"),
+                "start_time": params.get("start_time", ""),
+                "end_time": params.get("end_time", ""),
+                "count": params.get("count", -1),
+                "dividend_type": params.get("dividend_type", "follow"),
+                "fill_data": params.get("fill_data", True),
+            })
         return _get_market_data(ContextInfo, params)
     if method == "get_instrument_detail":
         return ContextInfo.get_instrument_detail(params.get("stock_code", ""))
