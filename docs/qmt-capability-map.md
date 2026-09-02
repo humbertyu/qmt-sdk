@@ -101,3 +101,17 @@ instrument or an account that has futures history loaded.
 These results are recorded as “callable, empty runtime result”, not as
 unsupported APIs. The raw probe report is
 `.artifacts/qmt-native-probe-20260902-170533.json`.
+
+### Typed market-client verification (2026-09-02)
+
+After the bridge switched market queries to the lower-level QMT data binding,
+both typed methods returned real daily data without importing pandas:
+
+| Method | Parameters | Result | Elapsed |
+| --- | --- | --- | ---: |
+| `client.market.get_market_data_ex` | `000001.SZ`, `1d`, `count=2` | 1 symbol; columnar payload with `time/stime/open/high/low/close/volume/amount` | 0.118 s |
+| `client.market.get_market_data` | same | Same native columnar structure | 0.167 s |
+
+The same request through `client.qmt.get_market_data_ex` returned the same
+structure in 0.055 s. These methods now bypass the pandas-dependent QMT wrapper
+and preserve the native QMT columnar result.
