@@ -41,8 +41,8 @@ def test_sync_auto_download_contract(monkeypatch):
         ["000001.SZ"], period="tick", start_time="20260901", end_time="20260901",
         callback=progress.append,
     )
-    assert result == {"000001.SZ": True}
-    assert progress == [{"finished": 1, "result": result}]
+    assert result == {}
+    assert progress == [{"finished": 1, "total": 1, "stockcode": "", "message": ""}]
     assert client.calls[-1][2] == 600
 
 
