@@ -547,7 +547,12 @@ def _handle(ContextInfo, request):
         return _call_native(ContextInfo, method, (params.get("stock_code", ""),))
     if method == "get_main_contract":
         code = params.get("code_market") or params.get("stock_code") or "%s.%s" % (params.get("exchange", ""), params.get("product", ""))
-        return _call_shapes(ContextInfo, method, ((code,),))
+        return _call_shapes(ContextInfo, method, (
+            (code, params.get("start_time", params.get("startDate", "")),
+             params.get("end_time", params.get("endDate", ""))),
+            (code, params.get("start_time", params.get("startDate", ""))),
+            (code,),
+        ))
     if method == "get_his_contract_list":
         return _call_native(ContextInfo, method, (params.get("code_market") or params.get("exchange", ""),))
     if method == "get_weight_in_index":
