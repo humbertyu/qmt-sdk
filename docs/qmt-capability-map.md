@@ -152,6 +152,18 @@ The pandas-dependent native signatures are also now exposed for completeness:
 `get_raw_financial_data(fieldList, stockList, startDate, endDate,
 report_type="announce_time")`. Their calls are routed to QMT and may still fail
 in this installation because the embedded runtime lacks pandas.
+
+### Final verification (2026-09-02)
+
+| API | Result |
+| --- | --- |
+| `client.financial.get_turnover_rate` | Reached QMT; QMT wrapper raised `ModuleNotFoundError: pandas`. |
+| `client.financial.get_raw_financial_data` | Reached QMT; QMT wrapper raised `ModuleNotFoundError: pandas`. |
+| `client.market.subscribe_whole_quote` | Subscription id returned in 0.108 s; unsubscribe returned `None`; no event during the 5-second no-market-update window. |
+
+The two pandas failures are environment dependencies, not bridge routing
+failures. Whole-quote event payload validation should be repeated during a live
+market session.
 ### Contract/ST/index typed-client verification (2026-09-02)
 
 | Method | Sample | Result | Elapsed |
