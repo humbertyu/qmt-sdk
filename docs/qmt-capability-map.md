@@ -155,3 +155,17 @@ exposed by `qmt_sdk.market`.
 
 Empty historical/ST results reflect the local QMT data set; all calls reached
 the documented native functions successfully.
+
+### Option/ETF/corporate-action typed-client verification (2026-09-02)
+
+| Method | Sample | Result | Elapsed |
+| --- | --- | --- | ---: |
+| `get_option_detail_data` | `10002235.SHO` | `{}`; call succeeded, no matching local contract | 0.110 s |
+| `get_option_undl_data` | `510300.SH` | `[]`; call succeeded, no option universe loaded | 0.109 s |
+| `get_option_list` | `510300.SH`, `202101`, `CALL`, `False` | `[]`; call succeeded, historical contracts unavailable | 0.071 s |
+| `get_etf_info` | default | `{}`; call succeeded, no ETF metadata payload | 0.106 s |
+| `get_etf_iopv` | `510300.SH` | `4.6155` | 0.116 s |
+| `get_divid_factors` | `600000.SH`, all dates | 27 corporate-action records | 0.297 s |
+
+The option/ETF empty results are data-universe conditions; the calls reached
+the native QMT methods without signature errors.
