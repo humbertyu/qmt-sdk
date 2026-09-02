@@ -554,12 +554,12 @@ def _handle(ContextInfo, request):
             (code,),
         ))
     if method == "get_his_contract_list":
-        return _call_native(ContextInfo, method, (params.get("code_market") or params.get("exchange", ""),))
+        return _call_native(ContextInfo, method, (params.get("market", params.get("code_market") or params.get("exchange", "")),))
     if method == "get_weight_in_index":
-        stocks = params.get("stock_code", params.get("stock_list", ""))
+        stocks = params.get("stockcode", params.get("stock_code", params.get("stock_list", "")))
         if isinstance(stocks, (list, tuple)):
             stocks = stocks[0] if stocks else ""
-        return _call_native(ContextInfo, method, (params.get("index_code", ""), stocks))
+        return _call_native(ContextInfo, method, (params.get("indexcode", params.get("index_code", "")), stocks))
     if method == "get_etf_info":
         return _call_shapes(ContextInfo, "get_etf_info", ((), ("",)))
     if method == "get_stock_type":

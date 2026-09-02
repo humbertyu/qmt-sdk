@@ -315,6 +315,35 @@ def get_total_share(stock_code):
     return _request("get_total_share", stock_code=stock_code)
 
 
+def get_his_contract_list(market):
+    return _request("get_his_contract_list", market=market)
+
+
+def get_main_contract(code_market, start_time="", end_time=""):
+    return _request("get_main_contract", code_market=code_market,
+                    start_time=start_time, end_time=end_time)
+
+
+def get_contract_multiplier(contractcode):
+    return _request("get_contract_multiplier", contractcode=contractcode)
+
+
+def get_contract_expire_date(codemarket):
+    return _request("get_contract_expire_date", codemarket=codemarket)
+
+
+def get_his_st_data(stock_code):
+    return _request("get_his_st_data", stock_code=stock_code)
+
+
+def get_st_status(stock_code):
+    return _request("get_st_status", stock_code=stock_code)
+
+
+def get_weight_in_index(indexcode, stockcode):
+    return _request("get_weight_in_index", indexcode=indexcode, stockcode=stockcode)
+
+
 def get_trading_calendar(market, start_time="", end_time=""):
     """Return the official trading-calendar list for a market."""
     return _request(
