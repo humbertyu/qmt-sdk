@@ -128,3 +128,9 @@ and preserve the native QMT columnar result.
 Formula calls and formula subscriptions remain callable through the typed
 methods, but require a formula configured in the running QMT strategy; they are
 not invoked with a fabricated formula name.
+
+Single-symbol financial download verification returned
+`BridgeMethodNotSupportedError` for both `download_financial_data2` and the
+legacy `download_financial_data` entry in this QMT build. The read API remains
+available; download support is therefore recorded as runtime capability
+dependent rather than silently emulated.
