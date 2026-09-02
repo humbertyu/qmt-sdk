@@ -41,3 +41,16 @@ Supported focus:
 Order submission, cancellation, account operations, and position mutation are
 not part of the current SDK roadmap. They may be considered as a separate
 design later, without changing the query bridge contract.
+
+## Capability integration model
+
+QMT-native query capabilities are integrated in three stages:
+
+1. expose the raw read operation through `QmtClient.query(method, params)`;
+2. add a typed domain method under `market`, `financial`, `instruments`, or
+   `jobs` once its parameters and return structure are stable;
+3. add an `xtquant_compat` mapping only when MiniQMT has a corresponding API.
+
+This keeps QMT capabilities available without forcing them into a MiniQMT
+shape. The raw query entry is an extension point, not a promise that every
+QMT method has already been normalized.

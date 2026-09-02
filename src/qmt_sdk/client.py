@@ -30,3 +30,12 @@ class QmtClient:
         self.financial = FinancialClient(self.backend)
         self.instruments = InstrumentClient(self.backend)
         self.jobs = JobClient(self.backend)
+
+    def query(self, method, params=None, timeout=None):
+        """Invoke a query capability by bridge method name.
+
+        This is the extension point for QMT-native read APIs that do not have
+        a MiniQMT equivalent yet. Domain clients should be preferred once a
+        capability has stable parameters and return semantics.
+        """
+        return self.backend.query(method, params=params, timeout=timeout)

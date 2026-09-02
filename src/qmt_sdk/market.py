@@ -19,3 +19,12 @@ class MarketClient:
 
     def unsubscribe_quote(self, *args, **kwargs):
         return self._backend.call("unsubscribe_quote", *args, **kwargs)
+
+    def download_history_data2(self, *args, **kwargs):
+        return self._backend.call("download_history_data2", *args, **kwargs)
+
+    def download_history_data(self, *args, **kwargs):
+        return self._backend.call("download_history_data", *args, **kwargs)
+
+    def get_divid_factors(self, *args, **kwargs):
+        return self._backend.call("get_divid_factors", *args, **kwargs)
