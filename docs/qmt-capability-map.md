@@ -129,8 +129,9 @@ Formula calls and formula subscriptions remain callable through the typed
 methods, but require a formula configured in the running QMT strategy; they are
 not invoked with a fabricated formula name.
 
-Single-symbol financial download verification returned
-`BridgeMethodNotSupportedError` for both `download_financial_data2` and the
-legacy `download_financial_data` entry in this QMT build. The read API remains
-available; download support is therefore recorded as runtime capability
-dependent rather than silently emulated.
+Financial download functions named `download_financial_data` and
+`download_financial_data2` belong to the MiniQMT/`xtquant.xtdata` compatibility
+surface, not to the official QMT data-function API. They are therefore not part
+of the `qmt_sdk` native financial client. If legacy code needs them, use
+`xtquant_compat.xtdata`, where their runtime availability is reported by the
+compatibility bridge.

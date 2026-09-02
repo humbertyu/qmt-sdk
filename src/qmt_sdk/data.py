@@ -14,7 +14,6 @@ try:
 except ImportError:  # QMT's embedded Python may not ship pandas
     pd = None
 
-from .api_surface import install_missing_api as _install_missing_api
 from .bridge.client import get_client
 from .bridge.config import configure as configure
 
@@ -486,31 +485,6 @@ def get_financial_data_ori(
     return raw
 
 
-def download_financial_data(
-    stock_list, table_list=[], start_time="", end_time="", incrementally=None,
-):
-    return _request(
-        "download_financial_data", stock_list=list(stock_list), table_list=list(table_list),
-        start_time=start_time, end_time=end_time, incrementally=incrementally,
-    )
-
-
-def download_financial_data2(
-    stock_list, table_list=[], start_time="", end_time="", callback=None,
-):
-    result = _request(
-        "download_financial_data2", stock_list=list(stock_list), table_list=list(table_list),
-        start_time=start_time, end_time=end_time,
-    )
-    if callback is not None:
-        # MiniQMT invokes the completion callback with the standard download
-        # progress shape.  The file bridge is intentionally blocking, so the
-        # completion notification is emitted once with the full stock count.
-        total = len(stock_list)
-        callback({"finished": total, "total": total, "stockcode": "", "message": ""})
-    return result
-
-
 def get_etf_info():
     return _request("get_etf_info")
 
@@ -587,6 +561,3 @@ def run():
             time.sleep(1)
     except KeyboardInterrupt:
         return None
-
-
-OFFICIAL_API_SPEC = _install_missing_api(globals(), _request)
