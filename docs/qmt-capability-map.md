@@ -140,3 +140,18 @@ compatibility bridge.
 `subscribe_quote2` is not part of the QMT native interface documented in the
 QMT Sheet/API pages. It remains a MiniQMT compatibility-only name and is not
 exposed by `qmt_sdk.market`.
+### Contract/ST/index typed-client verification (2026-09-02)
+
+| Method | Sample | Result | Elapsed |
+| --- | --- | --- | ---: |
+| `get_his_contract_list` | `IF` | `list`, 0 entries; call succeeded | 0.170 s |
+| `get_main_contract` | `IF00.IF` | `"IF00"` | 0.178 s |
+| `get_main_contract` (range) | `IF00.IF`, 20260101..20260902 | `"IF00"` | 0.054 s |
+| `get_contract_expire_date` | `IF00.IF` | `0` | 0.117 s |
+| `get_contract_multiplier` | `IF1707.IF` | `1` | 0.116 s |
+| `get_his_st_data` | `000004.SZ` | `{}`; call succeeded | 0.055 s |
+| `get_st_status` | `000004.SZ` | `{}`; call succeeded | 0.113 s |
+| `get_weight_in_index` | `000300.SH`, `000002.SZ` | `0.662` | 0.165 s |
+
+Empty historical/ST results reflect the local QMT data set; all calls reached
+the documented native functions successfully.
