@@ -117,49 +117,25 @@ configure(root=r"<bridge-data-root>", timeout=120)
 
 ## 五、目前支持的能力
 
-以下按能力分类列出，不在 README 中重复维护每一个接口的字段差异。完整签名、实现状态、
-返回结构、逐字段差异和测试记录以 [API 兼容性文档](docs/xtdata-api-matrix.md) 为准。
+下面是能力总览。`qmt_sdk` 提供 QMT 原生风格入口，`xtquant_compat` 提供 MiniQMT/`xtquant.xtdata`
+兼容入口；完整签名、实现状态、返回结构、逐字段差异和测试记录以
+[API 兼容性文档](docs/xtdata-api-matrix.md) 为准。
 
-### 行情与历史数据
+| 能力分类 | 代表接口/功能 | `qmt_sdk` | `xtquant_compat` | 说明 |
+|---|---|---|---|---|
+| 行情与历史数据 | `get_market_data`、`get_market_data_ex`、`get_local_data`、`get_history_data` | 支持 | 支持 | 1d、1m、tick；下载与查询分开 |
+| Tick 快照 | `get_full_tick` | 支持 | 支持 | 返回 QMT 原生或 MiniQMT 兼容结构 |
+| 历史下载 | `download_history_data`、`download_history_data2` | 支持 | 支持 | 批量下载结果依赖 QMT 本地数据能力 |
+| 实时订阅 | `subscribe_quote`、`subscribe_whole_quote`、`unsubscribe_quote` | 支持 | 支持 | 回调、事件持久化和取消订阅 |
+| 标的与板块 | `get_stock_list_in_sector`、`get_instrument_detail*` | 支持 | 支持 | 股票、指数、合约等标的属性 |
+| 交易日历与状态 | 交易日历、ST 状态、合约列表 | 支持 | 支持 | 返回结构按入口分别保持原生/兼容语义 |
+| ETF、期权与指数 | ETF、期权、指数成分/权重、主力合约 | 支持 | 支持 | 具体接口以 API 文档为准 |
+| 除权与计算 | 除权除息、BSM 价格、隐含波动率 | 支持 | 支持 | 查询或纯计算功能 |
+| 财务与市场扩展 | `get_financial_data`、港股通、龙虎榜、北向资金 | 支持 | 支持 | 部分 QMT 环境的财务接口依赖 pandas |
+| 财务扩展（暂不承诺数据） | `get_turnover_rate`、`get_raw_financial_data` | 已接入签名 | 已接入签名 | 当前环境缺少 pandas 时无法保证数据返回 |
 
-- `get_market_data`、`get_market_data_ex`、`get_local_data`
-- `get_full_tick`
-- `get_history_data`
-- `download_history_data`、`download_history_data2`
-- 1d、1m、tick 数据读取和独立落盘流程
-
-### 订阅与事件
-
-- `subscribe_quote`
-- `subscribe_whole_quote`
-- `unsubscribe_quote`
-- 订阅事件回调、事件文件持久化和至少一次投递
-
-### 标的、板块与交易日历
-
-- `get_stock_list_in_sector`
-- `get_instrument_detail`、`get_instrument_detail_list`
-- 交易日历、ST 状态、合约列表和合约属性查询
-
-### ETF、期权和指数
-
-- ETF 信息和 IOPV
-- 期权列表、期权详情、标的数据
-- 指数成分、权重和主力合约查询
-- 除权除息、BSM 价格和隐含波动率计算
-
-### 财务和市场扩展查询
-
-- `get_financial_data`
-- 港股通、龙虎榜、北向资金等市场扩展查询
-- `get_turnover_rate`、`get_raw_financial_data` 已接入签名，但当前部分 QMT 环境缺少
-  pandas，暂不作为可用数据能力承诺
-
-### 当前明确不在范围内
-
-- 下单、撤单及交易回报
-- 账户、持仓和资金修改
-- 需要厂商专有 DLL 或 QMT 外部服务才能完成的功能
+当前明确不在范围内：下单、撤单、交易回报、账户/持仓/资金修改，以及必须依赖厂商专有
+DLL 或外部服务才能完成的功能。
 
 ## 六、请求、订阅和可靠性
 
