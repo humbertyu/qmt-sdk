@@ -8,6 +8,23 @@
 Python 环境中的 Redis、ZeroMQ、`_socket`、`_ctypes` 或 pandas；外部 Python 环境负责
 安装 pandas 等数据处理依赖。
 
+## 为什么采用文件桥接
+
+不同券商提供的 QMT 版本，其内置 Python 运行环境并不完全相同。常见差异包括：
+
+- 没有网络相关模块，例如 `_socket`，无法安装或使用 Redis、ZeroMQ 等通信库；
+- 没有 `_ctypes`、pandas 或其他常用第三方依赖；
+- Python 版本、模块搜索路径和启动方式不同；
+- 策略运行环境受到白名单或沙箱限制，不能直接连接外部服务。
+
+如果把所有通信和数据处理都放进 QMT 内置 Python，代码就会被某个券商的运行环境绑定。
+文件桥接将 QMT 侧限制为“调用 `ContextInfo` 并读写文件”，把网络通信、数据处理和业务
+逻辑放到外部标准 Python 中。请求、响应和订阅事件通过带请求 ID 的文件交换，因此不依赖
+QMT 是否带 Redis、是否允许网络连接，也不要求在 QMT 内安装第三方包。
+
+这种方式的代价是文件 I/O 和额外延迟，适合查询、行情同步、故障恢复和存量代码迁移；
+不定位为逐笔级高频交易通道。
+
 ## 一、项目提供什么
 
 ```text
@@ -40,7 +57,7 @@ python -m venv .venv
 
 ## 三、在 QMT 中部署 bridge
 
-仓库的 `qmt_strategy` 目录已经包含两个需要部署的文件：
+源码仓库的 `qmt_strategy` 目录以及安装包的模板目录都包含两个需要部署的文件：
 
 - `XTQUANT_COMPAT_BRIDGE.py`：实际 bridge 实现；
 - `XTQUANT_COMPAT_BRIDGE_LAUNCHER.py`：QMT 策略入口。
@@ -65,6 +82,12 @@ python -m venv .venv
 
 launcher 会自动从 QMT 的 `sys.path` 查找 `XTQUANT_COMPAT_BRIDGE.py`。如果 QMT 没有把
 复制目录加入搜索路径，可以设置环境变量 `XTQUANT_COMPAT_BRIDGE_FILE` 指向该文件。
+
+通过 PyPI 安装时，可以使用下面的命令定位模板目录，再从该目录复制两个文件：
+
+```powershell
+python -c "import qmt_sdk; print(qmt_sdk.get_template_dir())"
+```
 
 bridge 默认使用独立的数据目录；请求、响应、状态和订阅事件都会写入其中。不要把这个
 目录与其他实验 bridge 混用，也不要将其加入生产数据目录。

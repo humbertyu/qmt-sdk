@@ -7,6 +7,23 @@ code should use the domain clients below.
 
 from .client import QmtClient
 from .bridge import configure
+import os
+import sys
+import sysconfig
 
-__all__ = ["QmtClient", "configure"]
-__version__ = "0.2.0"
+
+def get_template_dir():
+    """Return the installed directory containing QMT strategy templates."""
+    candidates = []
+    data_root = sysconfig.get_path("data")
+    if data_root:
+        candidates.append(os.path.join(data_root, "qmt_strategy"))
+    # Source checkouts remain directly usable without building a wheel.
+    candidates.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "qmt_strategy")))
+    for path in candidates:
+        if os.path.isfile(os.path.join(path, "XTQUANT_COMPAT_BRIDGE.py")):
+            return path
+    raise FileNotFoundError("QMT strategy templates are not installed")
+
+__all__ = ["QmtClient", "configure", "get_template_dir"]
+__version__ = "0.3.0"

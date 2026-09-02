@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "qmt-sdk"
-version = "0.2.0"
+version = "0.3.0"
 description = "Unified QMT Python SDK with MiniQMT xtquant compatibility."
 readme = "README.md"
 requires-python = ">=3.8"
@@ -27,6 +27,9 @@ where = ["src"]
 
 [tool.setuptools.package-data]
 xtquant_compat = ["official_xtdata_api.json"]
+
+[tool.setuptools.data-files]
+qmt_strategy = ["qmt_strategy/*.py"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
