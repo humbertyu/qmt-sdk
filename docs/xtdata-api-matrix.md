@@ -32,7 +32,7 @@ API surface coverage and behavioral compatibility are intentionally reported sep
 状态必须按接口和周期理解。一个接口在任一已测周期存在字段差异时，完整 API 表中的
 总状态会标为 ⚠️，即使它的其他周期已经完全通过。
 
-| API / 周期 | 验证入口 | 大 QMT 端到端 | 返回结构 | 字段与数据 | 结论 |
+| API / 周期 | 验收类型 | 大 QMT 端到端 | 返回结构 | 字段与数据 | 结论 |
 | --- | --- | :---: | :---: | :---: | --- |
 | `get_stock_list_in_sector` | Python API probe | ✅ | ✅ | ⚠️ | 返回 `list[str]`；大 QMT 多 10 只较新股票。 |
 | `get_instrument_detail` | Python API probe | ✅ | ⚠️ | ✅ | 原生 31 个字段均可提供；返回结果另有 4 个大 QMT 扩展字段。 |
@@ -40,9 +40,9 @@ API surface coverage and behavioral compatibility are intentionally reported sep
 | `download_history_data2` / `1d`, `1m`, `tick` | Python API probe | ✅ | ⚠️ | 不适用 | 两只股票下载通过；严格原生回调/返回语义尚未完全确认。 |
 | `get_market_data_ex` / `1d` | Python API probe | ✅ | ✅ | ✅ | 单日一根，字段、索引、dtype 和数值通过。 |
 | `get_market_data_ex` / `1m` | Python API probe | ✅ | ✅ | ✅ | 241 根，字段、索引、dtype 和数值通过。 |
-| `get_market_data_ex` / `tick` | `tools/compare_bigqmt_full_tick_db6.py` | ✅ | ✅ | ⚠️ | 4915 个时间戳全部一致；4 个字段存在差异或占位值。 |
-| `subscribe_quote` / `tick` | `tools/probe_subscription.py` | ✅ | ✅ | ⚠️ | `{symbol: [tick]}` 结构通过；字段全集未完全一致。 |
-| `unsubscribe_quote` | `tools/probe_subscription.py` | ✅ | ⚠️ | 不适用 | 取消订阅有效；返回值语义未确认与原生完全一致。 |
+| `get_market_data_ex` / `tick` | 独立行为验收 | ✅ | ✅ | ⚠️ | 4915 个时间戳全部一致；4 个字段存在差异或占位值。 |
+| `subscribe_quote` / `tick` | 独立行为验收 | ✅ | ✅ | ⚠️ | `{symbol: [tick]}` 结构通过；字段全集未完全一致。 |
+| `unsubscribe_quote` | 独立行为验收 | ✅ | ⚠️ | 不适用 | 取消订阅有效；返回值语义未确认与原生完全一致。 |
 | `get_full_tick` | Python API probe | ✅ | ✅ | ⚠️ | 时间、价格、累计量和盘口核心字段通过；字段全集待确认。 |
 
 ## 已验证接口的逐字段记录
