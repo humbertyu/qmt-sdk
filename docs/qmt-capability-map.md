@@ -71,3 +71,18 @@ and to the automated probe before being promoted to a typed domain method.
 Some QMT bindings are unavailable during `init`; `get_trading_dates` should be
 exercised after initialization in QMT's `after_init` phase. The bridge exposes
 an `after_init` hook and performs a request scan there as well.
+
+### Follow-up runtime verification (2026-09-02)
+
+After deploying the updated bridge and restarting QMT, the remaining signature
+checks all reached the native runtime successfully:
+
+| Function | Elapsed | Result | Interpretation |
+| --- | ---: | --- | --- |
+| `get_his_contract_list` | 0.123 s | `list`, 0 rows | Call path is valid; the sample contract/date has no history in this QMT instance. |
+| `get_history_data` | 0.063 s | `dict`, 0 keys | Call path is valid; the selected history index/date returned no rows. |
+| `get_trading_dates` | 0.116 s | `list`, 0 rows | Call path is valid after initialization; this runtime returned no dates for the sample window. |
+
+These results are recorded as “callable, empty runtime result”, not as
+unsupported APIs. The raw probe report is
+`.artifacts/qmt-native-probe-20260902-170533.json`.
