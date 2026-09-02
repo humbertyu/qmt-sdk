@@ -65,8 +65,8 @@ class InstrumentClient:
     def get_divid_factors(self, stockcode, date=""):
         return self._backend.call("get_divid_factors", stockcode, date)
 
-    def get_etf_info(self):
-        return self._backend.call("get_etf_info")
+    def get_etf_info(self, stockcode):
+        return self._backend.call("get_etf_info", stockcode)
 
     def get_etf_iopv(self, stock_code):
         return self._backend.call("get_etf_iopv", stock_code)

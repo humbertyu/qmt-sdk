@@ -365,6 +365,22 @@ def get_etf_iopv(stock_code):
     return _request("get_etf_iopv", stock_code=stock_code)
 
 
+def get_etf_info(stockcode):
+    return _request("get_etf_info", stockcode=stockcode)
+
+
+def get_turnover_rate(stock_list, start_time, end_time):
+    return _request("get_turnover_rate", stock_list=list(stock_list),
+                    start_time=start_time, end_time=end_time)
+
+
+def get_raw_financial_data(field_list, stock_list, start_date="", end_date="",
+                           report_type="announce_time"):
+    return _request("get_raw_financial_data", field_list=list(field_list),
+                    stock_list=list(stock_list), start_date=start_date,
+                    end_date=end_date, report_type=report_type)
+
+
 def get_trading_calendar(market, start_time="", end_time=""):
     """Return the official trading-calendar list for a market."""
     return _request(

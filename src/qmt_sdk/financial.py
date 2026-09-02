@@ -14,9 +14,10 @@ class FinancialClient:
     def get_total_share(self, stock_code):
         return self._backend.call("get_total_share", stock_code)
 
+    def get_turnover_rate(self, stock_list, start_time, end_time):
+        return self._backend.call("get_turnover_rate", stock_list, start_time, end_time)
+
     def get_raw_financial_data(self, field_list, stock_list, start_date="",
-                               end_date="", report_type="report_time",
-                               result_type="dict", is_detail=False):
+                               end_date="", report_type="announce_time"):
         return self._backend.call("get_raw_financial_data", field_list, stock_list,
-                                  start_date, end_date, report_type, result_type,
-                                  is_detail)
+                                  start_date, end_date, report_type)

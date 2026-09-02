@@ -561,7 +561,11 @@ def _handle(ContextInfo, request):
             stocks = stocks[0] if stocks else ""
         return _call_native(ContextInfo, method, (params.get("indexcode", params.get("index_code", "")), stocks))
     if method == "get_etf_info":
-        return _call_shapes(ContextInfo, "get_etf_info", ((), ("",)))
+        return _call_shapes(ContextInfo, "get_etf_info", ((params.get("stockcode", params.get("stock_code", "")),), ((),)))
+    if method == "get_turnover_rate":
+        return _call_native(ContextInfo, method, (params.get("stock_list", []), params.get("start_time", params.get("startTime", "")), params.get("end_time", params.get("endTime", ""))))
+    if method == "get_raw_financial_data":
+        return _call_native(ContextInfo, method, (params.get("field_list", params.get("fieldList", [])), params.get("stock_list", params.get("stockList", [])), params.get("start_date", params.get("startDate", "")), params.get("end_date", params.get("endDate", "")), params.get("report_type", "announce_time")))
     if method == "get_stock_type":
         stock = params.get("stock_code")
         variety = params.get("variety_list")

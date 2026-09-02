@@ -140,6 +140,18 @@ compatibility bridge.
 `subscribe_quote2` is not part of the QMT native interface documented in the
 QMT Sheet/API pages. It remains a MiniQMT compatibility-only name and is not
 exposed by `qmt_sdk.market`.
+
+The official Sheet signature for `subscribe_whole_quote` is
+`subscribe_whole_quote(code_list, callback=None)`, where `code_list` may contain
+market codes (`SH`, `SZ`) or individual symbols. The typed client and bridge use
+this signature and return the native integer subscription id; callback payloads
+are delivered as `{code: {field: value}}` events when the market is publishing.
+
+The pandas-dependent native signatures are also now exposed for completeness:
+`get_turnover_rate(stock_list, startTime, endTime)` and
+`get_raw_financial_data(fieldList, stockList, startDate, endDate,
+report_type="announce_time")`. Their calls are routed to QMT and may still fail
+in this installation because the embedded runtime lacks pandas.
 ### Contract/ST/index typed-client verification (2026-09-02)
 
 | Method | Sample | Result | Elapsed |
