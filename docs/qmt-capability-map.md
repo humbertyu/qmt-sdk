@@ -88,6 +88,16 @@ Additional 2026 validation with `stockcode="000001.SZ"`,
 trading dates. The earlier empty result was caused by the probe's narrow
 window/parameter combination, not by an unavailable API.
 
+### Effective-data follow-up
+
+Using the current QMT strategy instance, `get_history_data(index=0/1, period in
+{1d, 1m, tick}, 2026-01-01..2026-09-02)` returned an empty dictionary for all
+variants. `get_his_contract_list` also returned an empty list for common sample
+codes (`IF.CFFEX`, `IH.CFFEX`, `IC.CFFEX`, `rb.SHFE`). These calls are still
+successful; the current strategy/data context does not expose matching history
+for those samples. They should be rechecked with a strategy-bound historical
+instrument or an account that has futures history loaded.
+
 These results are recorded as “callable, empty runtime result”, not as
 unsupported APIs. The raw probe report is
 `.artifacts/qmt-native-probe-20260902-170533.json`.
