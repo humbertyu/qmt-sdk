@@ -216,12 +216,14 @@ def _unsubscribe(ContextInfo, params):
     subscription_id = int(params.get("subscription_id"))
     state = _subscriptions.pop(subscription_id, None)
     if state is None:
-        return False
+        # MiniQMT unsubscribe_quote has no return value; do not expose the
+        # bridge's internal subscription bookkeeping as a different API.
+        return None
     context = _raw_context(ContextInfo)
     unsubscribe = getattr(context, "unsubscribe_quote", None) if context is not None else None
     if callable(unsubscribe):
         unsubscribe(state.get("qmt_sequence"))
-    return True
+    return None
 
 
 def _subscribe_whole(ContextInfo, request, params):

@@ -78,5 +78,5 @@ def test_quote_subscription_writes_native_callback_event(monkeypatch, tmp_path):
     }
     assert bridge._handle(context, {
         "method": "unsubscribe_quote", "params": {"subscription_id": 1},
-    }) is True
+    }) is None
     assert context.context.unsubscribed == 88
