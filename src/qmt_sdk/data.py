@@ -184,27 +184,27 @@ def get_full_tick(code_list):
 
 
 def get_market_data_ex(
-    field_list=[], stock_list=[], period="1d", start_time="", end_time="", count=-1,
-    dividend_type="none", fill_data=True,
+    fields=[], stock_code=[], period="follow", start_time="", end_time="", count=-1,
+    dividend_type="follow", fill_data=True, subscribe=True,
 ):
     return get_client().request("get_market_data_ex", {
-        "fields": list(field_list), "stock_code": list(stock_list),
+        "fields": list(fields), "stock_code": list(stock_code),
         "period": period,
         "start_time": start_time,
         "end_time": end_time,
         "count": count,
         "dividend_type": dividend_type,
         "fill_data": fill_data,
-        "subscribe": True,
+        "subscribe": subscribe,
     })
 
 
 def get_market_data(
-    field_list=[], stock_list=[], period="1d", start_time="", end_time="", count=-1,
-    dividend_type="none", fill_data=True,
+    fields=[], stock_code=[], period="follow", start_time="", end_time="", count=-1,
+    dividend_type="follow", fill_data=True,
 ):
     return get_client().request("get_market_data", {
-        "fields": list(field_list), "stock_code": list(stock_list),
+        "fields": list(fields), "stock_code": list(stock_code),
         "period": period,
         "start_time": start_time,
         "end_time": end_time,
