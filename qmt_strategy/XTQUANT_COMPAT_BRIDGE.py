@@ -477,11 +477,13 @@ def _handle(ContextInfo, request):
         return _get_market_data(ContextInfo, params)
     if method == "get_market_data":
         if "fields" in params or "stock_code" in params:
-            args = (params.get("fields", []), params.get("stock_code", []),
+            base = (params.get("fields", []), params.get("stock_code", []),
                     params.get("period", "follow"), params.get("start_time", ""),
-                    params.get("end_time", ""), params.get("count", -1),
-                    params.get("dividend_type", "follow"), params.get("fill_data", True))
-            return _call_shapes(ContextInfo, method, (args,))
+                    params.get("end_time", ""))
+            return _call_shapes(ContextInfo, method, (
+                base + (params.get("fill_data", True), params.get("dividend_type", "follow"), params.get("count", -1)),
+                base + (params.get("count", -1), params.get("dividend_type", "follow"), params.get("fill_data", True)),
+            ))
         return _get_market_data(ContextInfo, params)
     if method == "get_instrument_detail":
         return ContextInfo.get_instrument_detail(params.get("stock_code", ""))

@@ -313,11 +313,17 @@ def get_sector_list():
     return _request("get_sector_list")
 
 
-def get_trading_dates(market, start_time="", end_time="", count=-1):
-    return _request(
-        "get_trading_dates", market=market, start_time=start_time,
-        end_time=end_time, count=count,
-    )
+def get_trading_dates(stockcode="", start_date="", end_date="", count=-1, period=""):
+    return _request("get_trading_dates", stockcode=stockcode, start_date=start_date,
+                    end_date=end_date, count=count, period=period)
+
+
+def get_last_volume(stock_code):
+    return _request("get_last_volume", stock_code=stock_code)
+
+
+def get_total_share(stock_code):
+    return _request("get_total_share", stock_code=stock_code)
 
 
 def get_trading_calendar(market, start_time="", end_time=""):
