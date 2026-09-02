@@ -286,7 +286,8 @@ def download_history_data2(
         "incrementally": incrementally,
     }, timeout=600)
     if callback is not None:
-        callback({"finished": 1, "result": result})
+        total = len(stock_list)
+        callback({"finished": total, "total": total, "stockcode": "", "message": ""})
     return result
 
 

@@ -328,19 +328,21 @@ def _download_history(params, request_id=None):
     batch_download = globals().get("download_history_data2")
     if callable(batch_download):
         _write_status(request_id, "running", 0, len(stocks))
-        result = batch_download(stocks, period, start_time, end_time)
+        batch_download(stocks, period, start_time, end_time)
         _write_status(request_id, "running", len(stocks), len(stocks))
-        return result
+        return {}
     download = globals().get("download_history_data") or globals().get("down_history_data")
     if not callable(download):
         raise NotImplementedError("QMT batch/single history download unavailable")
-    results = {}
     for index, stock in enumerate(stocks, 1):
         if _cancelled(request_id):
             raise RuntimeError("request cancelled")
         _write_status(request_id, "running", index - 1, len(stocks))
-        results[stock] = download(stock, period, start_time, end_time)
-    return results
+        download(stock, period, start_time, end_time)
+    # MiniQMT returns a result-info dictionary, which is normally empty when
+    # the server does not provide per-symbol timing metadata. Do not expose
+    # Big QMT's per-symbol boolean return values as a different API contract.
+    return {}
 
 
 def _cancelled(request_id):
