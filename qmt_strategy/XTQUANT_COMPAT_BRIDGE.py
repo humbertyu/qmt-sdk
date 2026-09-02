@@ -150,6 +150,15 @@ def _call_available(ContextInfo, names, args):
     raise NotImplementedError("QMT callable unavailable: %s" % ", ".join(names))
 
 
+def _call_native(ContextInfo, name, args):
+    """Prefer the embedded ContextInfo C++ binding for QMT-native methods."""
+    context = _raw_context(ContextInfo)
+    function = getattr(context, name, None) if context is not None else None
+    if callable(function):
+        return function(*args)
+    return _call_available(ContextInfo, name, args)
+
+
 def _call_shapes(ContextInfo, names, shapes):
     last_error = None
     for args in shapes:
@@ -512,27 +521,27 @@ def _handle(ContextInfo, request):
         )
     if method in ("get_hkt_details", "get_hkt_statistics", "get_north_finance_change"):
         date = params.get("date", params.get("start_date", params.get("start_time", "")))
-        return _call_shapes(ContextInfo, method, ((date,),))
+        return _call_native(ContextInfo, method, (date,))
     if method == "get_longhubang":
         stocks = params.get("stock_list", params.get("stock_code", []))
         if isinstance(stocks, str):
             stocks = [stocks]
-        return _call_shapes(ContextInfo, method, ((stocks, params.get("start_date", ""), params.get("end_date", ""), params.get("count", -1)),))
+        return _call_native(ContextInfo, method, (stocks, params.get("start_date", ""), params.get("end_date", ""), params.get("count", -1)))
     if method == "get_history_data":
         args = (params.get("index", 0), params.get("period", "1d"), params.get("start_time", ""), params.get("end_time", ""), params.get("fill_data", True))
-        return _call_shapes(ContextInfo, method, (args,))
+        return _call_native(ContextInfo, method, args)
     if method == "get_his_st_data":
-        return _call_shapes(ContextInfo, method, ((params.get("stock_code", ""),),))
+        return _call_native(ContextInfo, method, (params.get("stock_code", ""),))
     if method == "get_main_contract":
         code = params.get("code_market") or params.get("stock_code") or "%s.%s" % (params.get("exchange", ""), params.get("product", ""))
         return _call_shapes(ContextInfo, method, ((code,),))
     if method == "get_his_contract_list":
-        return _call_shapes(ContextInfo, method, ((params.get("code_market") or params.get("exchange", ""),),))
+        return _call_native(ContextInfo, method, (params.get("code_market") or params.get("exchange", ""),))
     if method == "get_weight_in_index":
         stocks = params.get("stock_code", params.get("stock_list", ""))
         if isinstance(stocks, (list, tuple)):
             stocks = stocks[0] if stocks else ""
-        return _call_shapes(ContextInfo, method, ((params.get("index_code", ""), stocks),))
+        return _call_native(ContextInfo, method, (params.get("index_code", ""), stocks))
     if method == "get_etf_info":
         return _call_shapes(ContextInfo, "get_etf_info", ((), ("",)))
     if method == "get_stock_type":
@@ -756,4 +765,9 @@ def adjust(ContextInfo):
 
 
 def handlebar(ContextInfo):
+    adjust(ContextInfo)
+
+
+def after_init(ContextInfo):
+    """Allow queries whose QMT bindings are initialized after ``init``."""
     adjust(ContextInfo)

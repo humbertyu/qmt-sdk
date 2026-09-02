@@ -68,3 +68,6 @@ For each acceptance run record QMT version, exact parameters, elapsed time,
 result type, row/count information, and exception text. An empty result is not
 treated as an implementation failure. New functions must be added to this map
 and to the automated probe before being promoted to a typed domain method.
+Some QMT bindings are unavailable during `init`; `get_trading_dates` should be
+exercised after initialization in QMT's `after_init` phase. The bridge exposes
+an `after_init` hook and performs a request scan there as well.
