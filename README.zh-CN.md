@@ -1,12 +1,12 @@
-# xtquant-compat
+# qmt-sdk
 
 [English](README.md) | [简体中文](README.zh-CN.md)
 
-`xtquant-compat` 通过运行在大 QMT 内部的纯文件桥接，提供 MiniQMT
-`xtquant.xtdata` API 的兼容实现。它面向缺少 `_socket`、`_ctypes`、pandas、Redis、
+`qmt-sdk` 通过运行在 QMT 内部的纯文件桥接，提供统一 QMT API，同时兼容 MiniQMT
+`xtquant.xtdata`。它面向缺少 `_socket`、`_ctypes`、pandas、Redis、
 ZeroMQ 或其他第三方包的 QMT Python 裁剪运行环境。
 
-当前状态：实验版 `0.1.0`。在与生产行情完成对照验证前，建议与现有 MiniQMT
+当前状态：实验版 `0.2.0`。在与生产行情完成对照验证前，建议与现有 MiniQMT
 并行部署，不要直接替换生产链路。
 
 ## 为什么使用文件 IPC？
@@ -55,7 +55,7 @@ python -m venv .venv
 4. 启动策略并确认日志出现：
 
    ```text
-   [xtquant_compat] started root=D:\FinTools\QMT\xtquant_compat_bridge
+    [qmt_sdk] started root=D:\FinTools\QMT\xtquant_compat_bridge
    ```
 
 桥接默认使用独立目录，不会接触之前实验使用的
@@ -66,6 +66,12 @@ python -m venv .venv
 业务调用通常只需修改导入路径：
 
 ```python
+from qmt_sdk import QmtClient
+
+client = QmtClient()
+print(client.jobs.bridge_status())
+
+# MiniQMT 存量代码也可继续使用：
 from xtquant_compat import xtdata
 
 print(xtdata.bridge_status())

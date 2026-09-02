@@ -1,12 +1,12 @@
-# xtquant-compat
+# qmt-sdk
 
 [English](README.md) | [简体中文](README.zh-CN.md)
 
-`xtquant-compat` exposes a focused subset of the MiniQMT `xtquant.xtdata` API through a
-pure file bridge running inside Big QMT. It is designed for QMT Python runtimes that do
+`qmt-sdk` exposes a unified QMT API and MiniQMT-compatible `xtquant.xtdata` surface through a
+pure file bridge running inside QMT. It is designed for QMT Python runtimes that do
 not provide `_socket`, `_ctypes`, pandas, Redis, ZeroMQ, or third-party packages.
 
-Status: experimental `0.1.0`. Use it beside an existing MiniQMT deployment until the
+Status: experimental `0.2.0`. Use it beside an existing MiniQMT deployment until the
 output has been validated against your production feed.
 
 ## Why file IPC?
