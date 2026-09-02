@@ -1,6 +1,6 @@
 # qmt-sdk
 
-`qmt-sdk` 是一个面向中国用户的 QMT 外部调用 SDK。它通过运行在 QMT 内部的文件桥接，
+`qmt-sdk` 是一个 QMT 外部调用 SDK。它通过运行在 QMT 内部的文件桥接，
 把 QMT 的查询和行情能力安全地暴露给外部 Python 程序；同时提供 `xtquant_compat`，
 用于适配 MiniQMT/`xtquant.xtdata` 的常用接口，帮助已有 MiniQMT 代码迁移到 QMT。
 
