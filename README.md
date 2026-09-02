@@ -37,7 +37,7 @@ Use an external Python 3.8+ environment. Do not install this package into QMT's 
 Python runtime.
 
 ```powershell
-cd D:\Projects\xtquant-compat
+cd D:\Projects\qmt-sdk
 python -m venv .venv
 .\.venv\Scripts\python.exe -m pip install -e ".[dev]"
 ```
@@ -60,7 +60,7 @@ python -m venv .venv
 4. Start the strategy and confirm:
 
    ```text
-   [xtquant_compat] started root=D:\FinTools\QMT\xtquant_compat_bridge
+   [qmt_sdk] started root=D:\FinTools\QMT\xtquant_compat_bridge
    ```
 
 The bridge deliberately uses a new root and does not touch the earlier

@@ -32,7 +32,7 @@ README 不重复罗列各接口结论。统一的
 请在外部 Python 3.8+ 环境中安装。不要将该包安装到 QMT 内置 Python 环境。
 
 ```powershell
-cd D:\Projects\xtquant-compat
+cd D:\Projects\qmt-sdk
 python -m venv .venv
 .\.venv\Scripts\python.exe -m pip install -e ".[dev]"
 ```
