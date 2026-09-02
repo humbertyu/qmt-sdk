@@ -1,8 +1,10 @@
 #coding:gbk
 """Pure-file Big QMT bridge. Keep this script compatible with Python 3.6."""
 import json
+import ast
 import os
 import pickle
+import re
 import time
 import traceback
 import uuid
@@ -345,6 +347,72 @@ def _download_history(params, request_id=None):
     return {}
 
 
+def _download_financial(params, request_id=None):
+    """Run the blocking financial download and expose MiniQMT semantics.
+
+    Big QMT builds differ: some inject ``download_financial_data2`` while
+    others only expose the older ``download_financial_data``.  The public
+    MiniQMT call returns after the download and does not expose Big QMT's
+    per-call boolean, so normalize the result to an empty result dictionary.
+    Progress is reported through the file status sidecar; the caller-level
+    callback is emitted by the Python compatibility surface after completion.
+    """
+    stocks = list(params.get("stock_list") or [])
+    tables = list(params.get("table_list") or [])
+    start = params.get("start_time", "")
+    end = params.get("end_time", "")
+    request_id = request_id or ""
+    _write_status(request_id, "running", 0, len(stocks))
+    function = globals().get("download_financial_data2")
+    if not callable(function):
+        function = globals().get("download_financial_data")
+    if not callable(function):
+        raise NotImplementedError("QMT financial download unavailable")
+    function(stocks, tables, start, end)
+    _write_status(request_id, "running", len(stocks), len(stocks))
+    return {}
+
+
+def _financial_fields(table_list):
+    """Use the shared Big QMT table translator when it is installed."""
+    aliases = {
+        "balance": "Balance", "income": "Income", "cashflow": "CashFlow",
+        "index": "PershareIndex", "capital": "Capital",
+        "pershareindex": "PershareIndex",
+    }
+    normalized = [aliases.get(str(item).strip().lower(), item) for item in (table_list or [])]
+    try:
+            source_path = r"D:\FinTools\QMT\python\bigqmt_signal_trader\adapters\market_bigqmt.py"
+            with open(source_path, "r") as stream:
+                source = stream.read()
+            tree = ast.parse(source)
+            catalogue = {}
+            for node in tree.body:
+                if isinstance(node, ast.Assign) and any(getattr(t, "id", None) == "_FINANCIAL_TABLE_FIELDS" for t in node.targets):
+                    catalogue = ast.literal_eval(node.value)
+                    break
+            # ContextInfo accepts the public table prefixes (Balance/Income/
+            # CashFlow/PershareIndex); using the internal ASHARE names can
+            # make an otherwise valid full-table request return empty.
+            table_map = {
+                "Balance": ("Balance", "ASHAREBALANCESHEET"),
+                "Income": ("Income", "ASHAREINCOME"),
+                "CashFlow": ("CashFlow", "ASHARECASHFLOW"),
+                "PershareIndex": ("PershareIndex", "PERSHAREINDEX"),
+            }
+            fields = []
+            for item in normalized:
+                text = str(item)
+                if "." in text:
+                    fields.append(text)
+                    continue
+                prefix, key = table_map.get(text, (text, text))
+                fields.extend([prefix + "." + name for name in catalogue.get(key, [])] or [text])
+            return fields
+    except Exception:
+        return list(normalized)
+
+
 def _cancelled(request_id):
     path = os.path.join(CANCELLATIONS, str(request_id) + ".json")
     if not os.path.exists(path):
@@ -449,6 +517,39 @@ def _handle(ContextInfo, request):
         return _call_available(ContextInfo, "unsubscribe_formula", (qmt_id,))
     if method == "download_history_data2":
         return _download_history(params, request.get("request_id"))
+    if method == "download_financial_data2":
+        return _download_financial(params, request.get("request_id"))
+    if method == "get_financial_data_ori":
+        # Older Big QMT builds expose only get_financial_data; its raw return
+        # is already the closest equivalent to the MiniQMT ``_ori`` alias.
+        stock_list = params.get("stock_list", [])
+        table_list = params.get("table_list", [])
+        start_time = params.get("start_time", "")
+        end_time = params.get("end_time", "")
+        report_type = params.get("report_type", "report_time")
+        injected = globals().get("get_financial_data_ori") or globals().get("get_financial_data")
+        if callable(injected):
+            return injected(stock_list, table_list, start_time, end_time, report_type)
+        fields = _financial_fields(table_list)
+        return _call_shapes(ContextInfo, "get_financial_data", (
+            (fields, stock_list, start_time, end_time, report_type, "dict", False),
+            (fields, stock_list, start_time, end_time, report_type),
+        ))
+    if method == "get_financial_data":
+        params_list = (
+            params.get("stock_list", []), params.get("table_list", []),
+            params.get("start_time", ""), params.get("end_time", ""),
+            params.get("report_type", "report_time"),
+        )
+        injected = globals().get("get_financial_data")
+        if callable(injected):
+            return injected(*params_list)
+        # ContextInfo's documented Big QMT order is fieldList, stockList.
+        fields = _financial_fields(params_list[1])
+        return _call_shapes(ContextInfo, "get_financial_data", (
+            (fields, params_list[0], params_list[2], params_list[3], params_list[4], "dict", False),
+            (fields, params_list[0], params_list[2], params_list[3], params_list[4]),
+        ))
     if method == "get_local_data":
         return _get_market_data(ContextInfo, params)
 
@@ -463,6 +564,7 @@ def _handle(ContextInfo, request):
         "get_ipo_info": (("get_ipo_info",), (params.get("start_time", ""), params.get("end_time", ""))),
         "get_divid_factors": (("get_divid_factors", "getDividFactors"), (params.get("stock_code"), params.get("start_time", ""), params.get("end_time", ""))),
         "get_financial_data": (("get_financial_data",), (params.get("stock_list", []), params.get("table_list", []), params.get("start_time", ""), params.get("end_time", ""), params.get("report_type", "report_time"))),
+        "get_financial_data_ori": (("get_financial_data_ori", "get_financial_data"), (params.get("stock_list", []), params.get("table_list", []), params.get("start_time", ""), params.get("end_time", ""), params.get("report_type", "report_time"))),
         "download_financial_data": (("download_financial_data",), (params.get("stock_list", []), params.get("table_list", []), params.get("start_time", ""), params.get("end_time", ""), params.get("incrementally"))),
         "download_financial_data2": (("download_financial_data2", "download_financial_data"), (params.get("stock_list", []), params.get("table_list", []), params.get("start_time", ""), params.get("end_time", ""))),
         "get_etf_info": (("get_etf_info",), ()),
@@ -500,7 +602,11 @@ def _process_one(ContextInfo, name):
         # Market data is columnar and can contain millions of scalar values.
         # Pickle protocol 4 preserves numpy arrays and avoids two full JSON
         # conversions. Small/control responses retain the inspectable JSON path.
-        if request.get("method") == "get_market_data_ex":
+        # Financial tables are commonly returned as nested DataFrames (or a
+        # pandas Panel on older QMT).  JSON conversion would turn those into
+        # repr strings and silently lose all rows/columns, so use the same
+        # binary sidecar used for large market-data responses.
+        if request.get("method") in ("get_market_data_ex", "get_financial_data", "get_financial_data_ori"):
             binary_name = name + ".pkl"
             binary_path = os.path.join(RESPONSES, binary_name)
             try:

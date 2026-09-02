@@ -3,6 +3,8 @@
 import threading
 import time
 import uuid
+import ast
+import re
 import pandas as pd
 
 from .api_surface import install_missing_api as _install_missing_api
@@ -101,6 +103,73 @@ def _fields_by_stock(raw, requested_fields=None):
         result[field].index.name = None
         result[field].columns.name = None
     return result
+
+
+def _normalize_financial_data(raw):
+    """Convert Big QMT's raw field/date/stock/value payload to MiniQMT shape."""
+    if not isinstance(raw, dict) or not {"field", "date", "stock", "value"}.issubset(raw):
+        return raw
+    fields = list(raw.get("field") or [])
+    stocks = list(raw.get("stock") or [])
+    dates = list(raw.get("date") or [])
+    values = list(raw.get("value") or [])
+    if not fields or not stocks or not dates:
+        return {}
+    # QMT may repeat stock labels once per date; retain first-seen order.
+    unique_stocks = list(dict.fromkeys(str(s) for s in stocks))
+    date_count = len(dates)
+    result = {stock: {} for stock in unique_stocks}
+    table_names = {
+        "ASHAREBALANCESHEET": "balance", "ASHAREINCOME": "income",
+        "ASHARECASHFLOW": "cashflow", "PERSHAREINDEX": "index",
+        "CAPITALSTRUCTURE": "capital", "TOP10HOLDER": "top10holder",
+        "TOP10FLOWHOLDER": "top10flowholder", "SHAREHOLDER": "holder",
+    }
+    grouped = {}
+    for pos, field in enumerate(fields):
+        text = str(field)
+        head, sep, name = text.partition(".")
+        grouped.setdefault(table_names.get(head.upper(), head.lower()), []).append((name if sep else text, pos))
+    for stock_index, stock in enumerate(unique_stocks):
+        for table, columns in grouped.items():
+            frame_data = {}
+            for column, field_index in columns:
+                series = values[field_index] if field_index < len(values) else []
+                series = list(series) if isinstance(series, (list, tuple)) else [series]
+                if len(series) >= len(unique_stocks) * date_count:
+                    offset = stock_index * date_count
+                    row = series[offset:offset + date_count]
+                elif len(series) >= date_count:
+                    row = series[:date_count]
+                else:
+                    row = series + [pd.NA] * (date_count - len(series))
+                frame_data[column] = row[:date_count]
+            result[stock][table] = pd.DataFrame(frame_data, index=[str(d) for d in dates])
+    return result
+
+
+def _expand_financial_tables(table_list):
+    aliases = {"balance": ("Balance", "ASHAREBALANCESHEET"), "income": ("Income", "ASHAREINCOME"), "cashflow": ("CashFlow", "ASHARECASHFLOW"), "index": ("PershareIndex", "PERSHAREINDEX")}
+    try:
+        path = r"D:\FinTools\QMT\python\bigqmt_signal_trader\adapters\market_bigqmt.py"
+        source = open(path, encoding="utf-8").read()
+        tree = ast.parse(source)
+        catalogue = {}
+        for node in tree.body:
+            if isinstance(node, ast.Assign) and any(getattr(t, "id", None) == "_FINANCIAL_TABLE_FIELDS" for t in node.targets):
+                catalogue = ast.literal_eval(node.value)
+                break
+        out = []
+        for item in table_list or []:
+            text = str(item)
+            if "." in text:
+                out.append(text)
+                continue
+            public, internal = aliases.get(text.lower(), (text, text))
+            out.extend([public + "." + field for field in catalogue.get(internal, [])] or [text])
+        return out
+    except Exception:
+        return list(table_list or [])
 
 
 def get_full_tick(code_list):
@@ -391,10 +460,33 @@ def getDividFactors(*args, **kwargs):
 def get_financial_data(
     stock_list, table_list=[], start_time="", end_time="", report_type="report_time",
 ):
-    return _request(
-        "get_financial_data", stock_list=list(stock_list), table_list=list(table_list),
+    expanded = _expand_financial_tables(table_list)
+    raw = _request(
+        "get_financial_data", stock_list=list(stock_list), table_list=expanded,
         start_time=start_time, end_time=end_time, report_type=report_type,
     )
+    result = _normalize_financial_data(raw)
+    # Big QMT's Python wrapper returns {stock: {field: DataFrame}} for a
+    # single stock/multiple dates; MiniQMT callers expect {stock: {table:
+    # DataFrame}}.  Business callers request one table per read, so combine
+    # the field frames under that table name.
+    if len(table_list or []) == 1 and isinstance(result, dict):
+        table = str(table_list[0]).lower()
+        for stock, fields in list(result.items()):
+            if isinstance(fields, dict) and fields and all(isinstance(v, pd.DataFrame) for v in fields.values()):
+                result[stock] = {table: pd.concat(fields.values(), axis=1)}
+    return result
+
+
+def get_financial_data_ori(
+    stock_list, table_list=[], start_time="", end_time="", report_type="report_time",
+):
+    """Return the unmodified financial payload, matching MiniQMT's alias."""
+    raw = _request(
+        "get_financial_data_ori", stock_list=list(stock_list), table_list=_expand_financial_tables(table_list),
+        start_time=start_time, end_time=end_time, report_type=report_type,
+    )
+    return _normalize_financial_data(raw)
 
 
 def download_financial_data(
@@ -414,7 +506,11 @@ def download_financial_data2(
         start_time=start_time, end_time=end_time,
     )
     if callback is not None:
-        callback({"finished": 1, "result": result})
+        # MiniQMT invokes the completion callback with the standard download
+        # progress shape.  The file bridge is intentionally blocking, so the
+        # completion notification is emitted once with the full stock count.
+        total = len(stock_list)
+        callback({"finished": total, "total": total, "stockcode": "", "message": ""})
     return result
 
 

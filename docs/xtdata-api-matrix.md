@@ -30,9 +30,9 @@ API surface coverage and behavioral compatibility are intentionally reported sep
 | `download_history_data2` | 1d、1m、tick 批量补数 | ⚠️ 已适配并验收 | 逐股票进度 callback 和长任务恢复 |
 | `subscribe_quote` | 实时 tick/1m 推送 | ⚠️ 已适配并验收 | 字段全集、断线重连和事件积压 |
 | `unsubscribe_quote` | 取消实时订阅 | ✅ 返回值已统一 | 重复取消和桥接重启后的行为 |
-| `get_trading_calendar` | 交易日历同步 | ➖ 接口已适配但当前 QMT 环境不可用 | MiniQMT 与 Big QMT 均未提供可调用实现 |
-| `get_financial_data` | 财务表查询 | 🧪 已有适配入口，未完成真实验收 | 返回层级、字段 dtype、无数据年度和分批读取 |
-| `download_financial_data2` | 财务数据下载 | 🧪 已有适配入口，未完成真实验收 | 下载完成回调、返回值和下载后读取 |
+| `get_trading_calendar` | 交易日历同步 | ➖ 已实现映射；部分 QMT 环境因版本/权限不可用 | 不作为基础日历同步流程的必需依赖；不可用时使用其他已验证来源 |
+| `get_financial_data` | 财务表查询 | ⚠️ 结构已实机验收；数据完整性依赖本地财务数据 | 返回层级、字段 dtype、无数据年度和分批读取 |
+| `download_financial_data2` | 财务数据下载 | 🧪 已完成阻塞调用/返回值/完成回调适配，待 QMT 实机验收 | 下载完成回调、返回值和下载后读取 |
 
 下一阶段优先处理后三个尚未完成真实验收的 API；其余已标记为 ⚠️ 的行情接口主要进入
 异常、重连和字段补齐阶段，不再重复实现另一套调用方式。
@@ -152,7 +152,8 @@ MiniQMT 官方实现的 Python 源码同样是逐只循环，但 5219 只实测�
 统一返回 `function not realize (ErrorID 300000)`；Big QMT 当前策略运行时未暴露
 `get_trading_calendar` callable，兼容层返回 `BridgeMethodNotSupportedError`。因此目前
 无法进行 native/compat 数据列表对照，也不能使用该接口生成交易日历；调用方需使用已有
-本地日历或其他已验证来源。这是 QMT 运行时能力限制，不是参数映射问题。
+本地日历或其他已验证来源。这是 QMT 运行时能力限制，不是参数映射问题。接口已实现映射，
+但当前部分 QMT 环境可能因版本或权限不可用；该接口不作为基础日历同步流程的必需依赖。
 
 ### `get_market_data` / `1d`
 
@@ -481,6 +482,7 @@ fixture 对照；tick 的行数、时间戳和核心字段已通过，字段差�
 | `get_instrument_detail(stock_code, iscomplete=False)` | ⚠️ | All 31 native fields passed for one stock; the result retains four Big QMT-only fields and other instrument types remain pending. |
 | `get_instrument_detail_list(stock_list, iscomplete=False)` | ⚠️ | Batch shape verified for 2/50/500 stocks and full 5217-stock workflow; fields are normalized per item. Big QMT internally performs one-by-one detail calls and is materially slower than MiniQMT. |
 | `get_instrument_type(stock_code, variety_list=None)` | 🧪 | Environment-dependent adapter; real-QMT verification pending. |
+
 | `get_ipo_info(start_time='', end_time='')` | 🧪 | Environment-dependent adapter; real-QMT verification pending. |
 | `get_kline_trading_period(stock_code)` | 🧪 | Environment-dependent adapter; real-QMT verification pending. |
 | `get_l2_order(field_list=[], stock_code='', start_time='', end_time='', count=-1)` | 🧪 | Environment-dependent adapter; real-QMT verification pending. |
@@ -570,3 +572,36 @@ fixture 对照；tick 的行数、时间戳和核心字段已通过，字段差�
 | ➖ Different local semantics | 14 |
 
 <!-- GENERATED_API_MATRIX_END -->
+
+## 财务接口详细记录
+
+### `get_financial_data`
+
+兼容层保留 MiniQMT 签名：`(stock_list, table_list=[], start_time='', end_time='', report_type='report_time')`。
+Big QMT 的 `ContextInfo.get_financial_data` 参数顺序是 `(fieldList, stockList, startDate, endDate, report_type)`，
+因此 bridge 会交换前两个参数，并将 MiniQMT 的整表名称（`Balance`、`Income`、`CashFlow`、`PershareIndex` 等）
+展开为 Big QMT 的 `TABLE.field` 字段列表。调用者无需改变代码。
+
+财务结果可能包含 pandas `DataFrame`，旧版 QMT 还可能返回 `Panel`。这些对象通过 pickle 二进制 sidecar 传输，
+避免 JSON 将整张表降级为字符串；客户端收到后仍得到 Python 对象。当前尚未完成具体股票、报告期、行数、列名
+和 dtype 的 native 数值对照仍需在完成下载后进行。验收需覆盖单股/多股、四张标准表、空结果、无效表名、无数据年度和分批读取。
+
+#### 运行时结构验收（2026-09-02）
+
+使用 `000001.SZ`、`000002.SZ`，报告期 `20240101`–`20251231`，分别查询四张表。每张表均返回
+两只股票，结构为 `股票 -> 表名 -> pandas.DataFrame`：`balance` 为 485×53，`income` 为
+485×24，`cashflow` 为 485×34，`index` 为 485×43；单次查询耗时约 0.16–0.27 秒。字段列名
+与 Big QMT 字段目录一致。该次环境未执行财务下载，部分值为空，因此数值与 MiniQMT 的一致性
+必须在数据下载/补齐后另行验收。
+
+### `download_financial_data2`
+
+兼容层保留 MiniQMT 的阻塞式签名：`(stock_list, table_list=[], start_time='', end_time='', callback=None)`。
+Big QMT 若提供 `download_financial_data2` 则优先调用，否则回退到 `download_financial_data`；完成后统一返回 `{}`，
+不泄露 Big QMT 的布尔值或其他内部结果。文件桥接写入 status sidecar，调用结束时向 callback 发送一次完整进度：
+`{'finished': len(stock_list), 'total': len(stock_list), 'stockcode': '', 'message': ''}`。底层通常是一次阻塞调用，
+因此不能承诺逐股票实时 callback；需要细粒度进度的调用方应自行分批提交。
+
+验收需先下载再读取同一报告期的 `balance`、`income`、`cashflow`、`index`，核对返回值、callback 字段及下载后
+`get_financial_data` 的行列内容，并记录首次预热、重复调用、空股票列表、取消/超时和重启状态。未完成实机验收前，
+不宣称字段和值与 MiniQMT 完全一致。
