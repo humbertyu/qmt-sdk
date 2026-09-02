@@ -30,7 +30,7 @@ API surface coverage and behavioral compatibility are intentionally reported sep
 | `download_history_data2` | 1d、1m、tick 批量补数 | ⚠️ 已适配并验收 | 逐股票进度 callback 和长任务恢复 |
 | `subscribe_quote` | 实时 tick/1m 推送 | ⚠️ 已适配并验收 | 字段全集、断线重连和事件积压 |
 | `unsubscribe_quote` | 取消实时订阅 | ✅ 返回值已统一 | 重复取消和桥接重启后的行为 |
-| `get_trading_calendar` | 交易日历同步 | 🧪 已有适配入口，未完成真实验收 | 历史范围、未来日期、市场参数和空结果 |
+| `get_trading_calendar` | 交易日历同步 | ⚠️ 已完成调用适配，待真实验收 | 历史范围、未来日期、市场参数和空结果 |
 | `get_financial_data` | 财务表查询 | 🧪 已有适配入口，未完成真实验收 | 返回层级、字段 dtype、无数据年度和分批读取 |
 | `download_financial_data2` | 财务数据下载 | 🧪 已有适配入口，未完成真实验收 | 下载完成回调、返回值和下载后读取 |
 
@@ -138,6 +138,13 @@ MiniQMT 官方实现的 Python 源码同样是逐只循环，但 5219 只实测�
 
 本记录覆盖了标准文档要求的签名、正常路径、边界输入、结构规范化、对照性能和任务状态。
 取消/超时需要在真实长任务运行期间另行验收，不能用短请求推断。
+
+### `get_trading_calendar`
+
+兼容层已提供 `get_trading_calendar(market, start_time='', end_time='')`，桥接端优先调用
+大 QMT 的三参数形式；若当前 QMT 构建仍保留历史的第四个 `tradetimes` 参数，则以
+`False` 回退调用。该接口目前已完成调用适配，尚未完成真实环境的历史范围、未来日期、
+市场代码和空结果对照，验收完成前不标记为完全通过。
 
 ### `get_market_data` / `1d`
 

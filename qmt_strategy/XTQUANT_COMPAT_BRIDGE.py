@@ -401,6 +401,15 @@ def _handle(ContextInfo, request):
         if not callable(get_sector):
             raise NotImplementedError("get_stock_list_in_sector unavailable")
         return get_sector(params.get("sector_name", ""))
+    if method == "get_trading_calendar":
+        market = params.get("market", "")
+        start = params.get("start_time", "")
+        end = params.get("end_time", "")
+        # Builds differ on whether the retired tradetimes argument is still
+        # present; prefer the current three-argument API and fall back safely.
+        return _call_shapes(ContextInfo, "get_trading_calendar", (
+            (market, start, end), (market, start, end, False),
+        ))
     if method == "get_sector_list":
         return _call_shapes(ContextInfo, "get_sector_list", ((), ("",)))
     if method == "get_trading_dates":

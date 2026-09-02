@@ -247,6 +247,14 @@ def get_trading_dates(market, start_time="", end_time="", count=-1):
     )
 
 
+def get_trading_calendar(market, start_time="", end_time=""):
+    """Return the official trading-calendar list for a market."""
+    return _request(
+        "get_trading_calendar", market=market, start_time=start_time,
+        end_time=end_time,
+    )
+
+
 def get_holidays():
     return _request("get_holidays")
 
