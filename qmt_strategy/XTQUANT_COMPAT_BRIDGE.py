@@ -1,5 +1,5 @@
 #coding:gbk
-"""Pure-file Big QMT bridge. Keep this script compatible with Python 3.6."""
+"""Pure-file QMT bridge. Keep this script compatible with Python 3.6."""
 import json
 import ast
 import os
@@ -24,6 +24,14 @@ _last_scan = 0.0
 _subscriptions = {}
 _next_subscription_id = 1
 _bridge_instance_id = uuid.uuid4().hex
+
+# Control-plane requests must be serviced before ordinary data queries when
+# several requests are waiting.  They still execute on the same QMT strategy
+# thread; this only defines queue ordering and does not introduce concurrency.
+_CONTROL_METHODS = set((
+    "subscribe_quote", "subscribe_whole_quote", "unsubscribe_quote",
+    "subscribe_formula", "unsubscribe_formula",
+))
 
 
 def _mkdirs():
@@ -780,7 +788,17 @@ def adjust(ContextInfo):
     _last_scan = now
     _mkdirs()
     names = [name for name in os.listdir(REQUESTS) if name.endswith(".json")]
-    for name in sorted(names)[:50]:
+    # Keep one QMT execution lane, but make subscription control responsive
+    # when ordinary history/market-data requests are queued ahead of it.
+    def queue_key(name):
+        method = ""
+        try:
+            with open(os.path.join(REQUESTS, name), "r", encoding="utf-8") as stream:
+                method = json.load(stream).get("method", "")
+        except Exception:
+            pass
+        return (0 if method in _CONTROL_METHODS else 1, name)
+    for name in sorted(names, key=queue_key)[:50]:
         _process_one(ContextInfo, name)
 
 
