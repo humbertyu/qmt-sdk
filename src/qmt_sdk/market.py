@@ -34,6 +34,11 @@ class MarketClient:
     def subscribe_whole_quote(self, code_list, callback=None):
         return self._backend.call("subscribe_whole_quote", code_list, callback)
 
+    def subscribe_quote2(self, stock_code, period="1d", start_time="", end_time="",
+                         count=0, dividend_type=None, callback=None):
+        return self._backend.call("subscribe_quote2", stock_code, period,
+                                  start_time, end_time, count, dividend_type, callback)
+
     def subscribe_formula(self, formula_name, stock_code, period, start_time="",
                           end_time="", count=-1, dividend_type=None,
                           extend_param=None, callback=None):
