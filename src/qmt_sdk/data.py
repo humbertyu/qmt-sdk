@@ -1,11 +1,18 @@
-"""Public ``xtquant.xtdata`` compatibility surface backed by file IPC."""
+"""QMT-native data surface backed by file IPC.
+
+MiniQMT/pandas shape conversion belongs to ``xtquant_compat.xtdata``; this
+module forwards QMT calls and preserves their native payloads.
+"""
 
 import threading
 import time
 import uuid
 import ast
 import re
-import pandas as pd
+try:
+    import pandas as pd  # legacy helpers only
+except ImportError:  # QMT's embedded Python may not ship pandas
+    pd = None
 
 from .api_surface import install_missing_api as _install_missing_api
 from .bridge.client import get_client
@@ -173,33 +180,31 @@ def _expand_financial_tables(table_list):
 
 
 def get_full_tick(code_list):
-    return get_client().request("get_full_tick", {"stock_list": list(code_list)})
+    return get_client().request("get_full_tick", {"stock_code": list(code_list)})
 
 
 def get_market_data_ex(
     field_list=[], stock_list=[], period="1d", start_time="", end_time="", count=-1,
     dividend_type="none", fill_data=True,
 ):
-    raw = get_client().request("get_market_data_ex", {
-        "field_list": list(field_list),
-        "stock_list": list(stock_list),
+    return get_client().request("get_market_data_ex", {
+        "fields": list(field_list), "stock_code": list(stock_list),
         "period": period,
         "start_time": start_time,
         "end_time": end_time,
         "count": count,
         "dividend_type": dividend_type,
         "fill_data": fill_data,
+        "subscribe": True,
     })
-    return _frames_by_stock(raw, field_list, period)
 
 
 def get_market_data(
     field_list=[], stock_list=[], period="1d", start_time="", end_time="", count=-1,
     dividend_type="none", fill_data=True,
 ):
-    raw = get_client().request("get_market_data", {
-        "field_list": list(field_list),
-        "stock_list": list(stock_list),
+    return get_client().request("get_market_data", {
+        "fields": list(field_list), "stock_code": list(stock_list),
         "period": period,
         "start_time": start_time,
         "end_time": end_time,
@@ -207,7 +212,6 @@ def get_market_data(
         "dividend_type": dividend_type,
         "fill_data": fill_data,
     })
-    return _fields_by_stock(raw, field_list)
 
 
 def subscribe_quote(stock_code, period="1d", start_time="", end_time="", count=0, callback=None):

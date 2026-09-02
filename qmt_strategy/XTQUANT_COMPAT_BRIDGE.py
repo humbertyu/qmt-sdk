@@ -456,7 +456,7 @@ def _handle(ContextInfo, request):
             "time": time.time(),
         }
     if method == "get_full_tick":
-        return ContextInfo.get_full_tick(params.get("stock_list", []))
+        return ContextInfo.get_full_tick(params.get("stock_code", params.get("stock_list", [])))
     if method == "get_market_data_ex":
         if "fields" in params or "stock_code" in params:
             args = (params.get("fields", []), params.get("stock_code", []),
