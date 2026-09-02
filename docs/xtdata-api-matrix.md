@@ -37,7 +37,7 @@ API surface coverage and behavioral compatibility are intentionally reported sep
 | `get_stock_list_in_sector` | Python API probe | ✅ | ✅ | ⚠️ | 返回 `list[str]`；大 QMT 多 10 只较新股票。 |
 | `get_instrument_detail` | Python API probe | ✅ | ⚠️ | ✅ | 原生 31 个字段均可提供；返回结果另有 4 个大 QMT 扩展字段。 |
 | `get_market_data` / `1d` | Python API probe | ✅ | ✅ | ✅ | 字段字典、股票行、时间列以及样本数值通过。 |
-| `download_history_data2` / `1d`, `1m`, `tick` | Python API probe | ✅ | ⚠️ | 不适用 | 两只股票下载通过；严格原生回调/返回语义尚未完全确认。 |
+| `download_history_data2` / `1d`, `1m`, `tick` | 独立行为验收 | ✅ | ⚠️ | 不适用 | 下载链路通过；返回值已统一为 `{}`，逐股票进度回调时序仍未完全等价。 |
 | `get_market_data_ex` / `1d` | Python API probe | ✅ | ✅ | ✅ | 单日一根，字段、索引、dtype 和数值通过。 |
 | `get_market_data_ex` / `1m` | Python API probe | ✅ | ✅ | ✅ | 241 根，字段、索引、dtype 和数值通过。 |
 | `get_market_data_ex` / `tick` | 独立行为验收 | ✅ | ✅ | ⚠️ | 4915 个时间戳全部一致；4 个字段存在差异或占位值。 |
@@ -297,6 +297,21 @@ MiniQMT API 的返回语义，不知道某个股票在业务上是否应该有�
 2026-09-01 重启后的 Big QMT 能力探测结果：`download_history_data2` 未暴露，
 `download_history_data` 与 `down_history_data` 可用。因此 compat 的批量下载只能在桥接
 内部逐只回退，不能声称使用了 Big QMT 原生批量下载接口。
+
+#### 返回值与完成回调语义验收（2026-09-02）
+
+MiniQMT 实测单股票 `1d` 下载完成后返回空字典 `{}`；完成回调为进度字典，不包含逐股票
+布尔结果。兼容层已将 Big QMT 逐只 `down_history_data` 的结果隐藏，统一返回 `{}`，并在
+同步请求完成后调用一次：
+
+```python
+{"finished": total, "total": total, "stockcode": "", "message": ""}
+```
+
+这保证了“下载后再查询”的调用方不会因返回值结构变化而分支。当前文件桥接尚未提供
+MiniQMT 那种每只股票完成时实时触发一次 callback 的进度事件；依赖逐股票进度展示或
+中途处理的调用方仍需单独验收。下载是否真正产生目标数据，应通过后续
+`get_market_data_ex` 读取结果确认。
 
 ### `download_history_data`
 
