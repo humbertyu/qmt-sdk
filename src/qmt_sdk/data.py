@@ -217,16 +217,6 @@ def subscribe_quote(stock_code, period="1d", start_time="", end_time="", count=0
     return get_client().subscribe(stock_code, period, start_time, end_time, count, callback)
 
 
-def subscribe_quote2(
-    stock_code, period="1d", start_time="", end_time="", count=0,
-    dividend_type=None, callback=None,
-):
-    return get_client().subscribe_method("subscribe_quote2", {
-        "stock_code": stock_code, "period": period, "start_time": start_time,
-        "end_time": end_time, "count": count, "dividend_type": dividend_type,
-    }, callback)
-
-
 def subscribe_whole_quote(code_list, callback=None):
     return get_client().subscribe_method(
         "subscribe_whole_quote", {"code_list": list(code_list)}, callback,

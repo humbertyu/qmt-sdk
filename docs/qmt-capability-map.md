@@ -135,3 +135,7 @@ surface, not to the official QMT data-function API. They are therefore not part
 of the `qmt_sdk` native financial client. If legacy code needs them, use
 `xtquant_compat.xtdata`, where their runtime availability is reported by the
 compatibility bridge.
+
+`subscribe_quote2` is not part of the QMT native interface documented in the
+QMT Sheet/API pages. It remains a MiniQMT compatibility-only name and is not
+exposed by `qmt_sdk.market`.

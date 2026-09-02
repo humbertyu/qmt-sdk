@@ -191,10 +191,8 @@ def _subscribe(ContextInfo, request, params):
     period = params.get("period", "1d")
     client_id = request.get("client_id") or "anonymous"
     context = _raw_context(ContextInfo)
-    method_name = params.get("_subscribe_method", "subscribe_quote")
+    method_name = "subscribe_quote"
     subscribe = getattr(context, method_name, None) if context is not None else None
-    if not callable(subscribe) and method_name != "subscribe_quote":
-        subscribe = getattr(context, "subscribe_quote", None) if context is not None else None
     if not callable(subscribe):
         raise NotImplementedError("ContextInfo.context.subscribe_quote unavailable")
     subscription_id = _next_subscription_id
@@ -219,15 +217,7 @@ def _subscribe(ContextInfo, request, params):
         }
         _atomic_write(path, event)
 
-    if method_name == "subscribe_quote2":
-        try:
-            qmt_sequence = subscribe(stock, period, params.get("start_time", ""),
-                                      params.get("end_time", ""), params.get("count", 0),
-                                      params.get("dividend_type"), on_quote)
-        except TypeError:
-            qmt_sequence = subscribe(stock, period, params.get("start_time", ""), on_quote)
-    else:
-        qmt_sequence = subscribe(stock, period, params.get("start_time", ""), on_quote)
+    qmt_sequence = subscribe(stock, period, params.get("start_time", ""), on_quote)
     state["qmt_sequence"] = qmt_sequence
     state["callback"] = on_quote
     _subscriptions[subscription_id] = state
@@ -569,9 +559,6 @@ def _handle(ContextInfo, request):
         variety = params.get("variety_list")
         return _call_shapes(ContextInfo, "get_stock_type", ((stock, variety), (stock,)))
     if method == "subscribe_quote":
-        return _subscribe(ContextInfo, request, params)
-    if method == "subscribe_quote2":
-        params["_subscribe_method"] = "subscribe_quote2"
         return _subscribe(ContextInfo, request, params)
     if method == "subscribe_whole_quote":
         return _subscribe_whole(ContextInfo, request, params)
