@@ -26,6 +26,11 @@ class MarketClient:
                                   start_time, end_time, count, dividend_type,
                                   fill_data, data_dir)
 
+    def get_history_data(self, length, period, field, dividend_type="none",
+                         skip_paused=True):
+        return self._backend.call("get_history_data", length, period, field,
+                                  dividend_type, skip_paused)
+
     def subscribe_quote(self, stock_code, period="tick", start_time="", end_time="",
                         count=0, callback=None):
         return self._backend.call("subscribe_quote", stock_code, period, start_time,

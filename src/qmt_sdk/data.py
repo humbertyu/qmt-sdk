@@ -444,6 +444,11 @@ def get_local_data(
     )
 
 
+def get_history_data(length, period, field, dividend_type="none", skip_paused=True):
+    return _request("get_history_data", len=length, period=period, field=field,
+                    dividend_type=dividend_type, skip_paused=skip_paused)
+
+
 def get_divid_factors(stock_code, start_time="", end_time=""):
     return _request(
         "get_divid_factors", stock_code=stock_code,

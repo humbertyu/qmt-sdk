@@ -538,7 +538,10 @@ def _handle(ContextInfo, request):
             stocks = [stocks]
         return _call_native(ContextInfo, method, (stocks, params.get("start_date", ""), params.get("end_date", ""), params.get("count", -1)))
     if method == "get_history_data":
-        args = (params.get("index", 0), params.get("period", "1d"), params.get("start_time", ""), params.get("end_time", ""), params.get("fill_data", True))
+        args = (params.get("len", params.get("length", 2)),
+                params.get("period", "1d"), params.get("field", "close"),
+                params.get("dividend_type", "none"),
+                params.get("skip_paused", True))
         return _call_native(ContextInfo, method, args)
     if method == "get_his_st_data":
         return _call_native(ContextInfo, method, (params.get("stock_code", ""),))
