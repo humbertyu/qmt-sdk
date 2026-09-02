@@ -115,3 +115,16 @@ both typed methods returned real daily data without importing pandas:
 The same request through `client.qmt.get_market_data_ex` returned the same
 structure in 0.055 s. These methods now bypass the pandas-dependent QMT wrapper
 and preserve the native QMT columnar result.
+
+### Subscription and download verification (2026-09-02)
+
+| API | Test | Result | Elapsed |
+| --- | --- | --- | ---: |
+| `client.market.subscribe_quote` | `000001.SZ`, `tick`, 8-second listen | Subscription id `1`; 1 event received with `{symbol: [tick]}` shape | 0.110 s to subscribe |
+| `client.market.unsubscribe_quote` | id `1` | Returned native `None`; subscription stopped | immediate |
+| `client.market.download_history_data` | one symbol, `1d`, `20260902` | Completed with `{}` | 0.169 s |
+| `client.market.download_history_data2` | one symbol, `1d`, `20260902` | Completed with `{}` | 0.168 s |
+
+Formula calls and formula subscriptions remain callable through the typed
+methods, but require a formula configured in the running QMT strategy; they are
+not invoked with a fabricated formula name.
