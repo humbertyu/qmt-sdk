@@ -498,11 +498,10 @@ def _handle(ContextInfo, request):
     if method == "get_sector_list":
         return _call_shapes(ContextInfo, "get_sector_list", ((), ("",)))
     if method == "get_trading_dates":
-        base = (
-            params.get("market"), params.get("start_time", ""),
-            params.get("end_time", ""), params.get("count", -1),
-        )
-        return _call_shapes(ContextInfo, "get_trading_dates", (base, base + ("",)))
+        market = params.get("stockcode", params.get("market", "")) or ""
+        base = (market, params.get("start_date", params.get("start_time", "")),
+                params.get("end_date", params.get("end_time", "")), params.get("count", -1))
+        return _call_shapes(ContextInfo, "get_trading_dates", (base, base + (params.get("period", ""),)))
     if method == "get_divid_factors":
         stock = params.get("stock_code")
         date = params.get("end_time", "") or params.get("start_time", "")
@@ -511,6 +510,29 @@ def _handle(ContextInfo, request):
             ((stock, params.get("start_time", ""), params.get("end_time", "")),
              (stock, date), (stock,)),
         )
+    if method in ("get_hkt_details", "get_hkt_statistics", "get_north_finance_change"):
+        date = params.get("date", params.get("start_date", params.get("start_time", "")))
+        return _call_shapes(ContextInfo, method, ((date,),))
+    if method == "get_longhubang":
+        stocks = params.get("stock_list", params.get("stock_code", []))
+        if isinstance(stocks, str):
+            stocks = [stocks]
+        return _call_shapes(ContextInfo, method, ((stocks, params.get("start_date", ""), params.get("end_date", ""), params.get("count", -1)),))
+    if method == "get_history_data":
+        args = (params.get("index", 0), params.get("period", "1d"), params.get("start_time", ""), params.get("end_time", ""), params.get("fill_data", True))
+        return _call_shapes(ContextInfo, method, (args,))
+    if method == "get_his_st_data":
+        return _call_shapes(ContextInfo, method, ((params.get("stock_code", ""),),))
+    if method == "get_main_contract":
+        code = params.get("code_market") or params.get("stock_code") or "%s.%s" % (params.get("exchange", ""), params.get("product", ""))
+        return _call_shapes(ContextInfo, method, ((code,),))
+    if method == "get_his_contract_list":
+        return _call_shapes(ContextInfo, method, ((params.get("code_market") or params.get("exchange", ""),),))
+    if method == "get_weight_in_index":
+        stocks = params.get("stock_code", params.get("stock_list", ""))
+        if isinstance(stocks, (list, tuple)):
+            stocks = stocks[0] if stocks else ""
+        return _call_shapes(ContextInfo, method, ((params.get("index_code", ""), stocks),))
     if method == "get_etf_info":
         return _call_shapes(ContextInfo, "get_etf_info", ((), ("",)))
     if method == "get_stock_type":
