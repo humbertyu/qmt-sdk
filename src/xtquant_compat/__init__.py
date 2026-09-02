@@ -1,7 +1,7 @@
-"""MiniQMT-style APIs backed by a Big QMT file bridge."""
+"""Migration namespace for the unified :mod:`qmt_sdk` package."""
 
-from . import xtdata
-from .config import configure
+from qmt_sdk import data as xtdata
+from qmt_sdk.bridge import configure
 
 __all__ = ["configure", "xtdata"]
 __version__ = "0.1.0"

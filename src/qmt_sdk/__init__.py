@@ -6,6 +6,7 @@ code should use the domain clients below.
 """
 
 from .client import QmtClient
+from .bridge import configure
 
-__all__ = ["QmtClient"]
+__all__ = ["QmtClient", "configure"]
 __version__ = "0.2.0"

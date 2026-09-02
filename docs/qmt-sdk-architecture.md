@@ -8,6 +8,9 @@ new code:       qmt_sdk.QmtClient
 legacy code:    xtquant_compat.xtdata
                          │
                          ▼
+                   qmt_sdk core
+                         │
+                         ▼
                   shared file bridge
                          │
                          ▼
@@ -22,8 +25,8 @@ added to a domain client first, then exposed through compatibility only when a
 MiniQMT equivalent exists.
 
 The package is intentionally a single distribution (`qmt-sdk`). The historical
-`xtquant_compat` import remains as a migration module during the early release;
-it is not a second transport or a second implementation.
+`xtquant_compat` import is a migration facade over `qmt_sdk`; the dependency
+direction never goes from the core SDK back to the compatibility namespace.
 
 ## Current scope
 
