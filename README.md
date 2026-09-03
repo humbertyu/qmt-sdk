@@ -45,11 +45,17 @@ QMT 是否带 Redis、是否允许网络连接，也不要求在 QMT 内安装�
 不要把本项目安装到 QMT 自带的 Python。请使用外部 Python 3.8 或更高版本：
 
 ```powershell
+python -m pip install qmt-sdk
+```
+
+如需从源码参与开发，可使用：
+
+```powershell
 python -m venv .venv
 .\.venv\Scripts\python.exe -m pip install -e ".[dev]"
 ```
 
-如果只使用运行时，不需要开发依赖，可以执行：
+如果只使用源码运行时、不需要开发依赖，可以执行：
 
 ```powershell
 .\.venv\Scripts\python.exe -m pip install -e .

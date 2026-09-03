@@ -26,4 +26,4 @@ def get_template_dir():
     raise FileNotFoundError("QMT strategy templates are not installed")
 
 __all__ = ["QmtClient", "configure", "get_template_dir"]
-__version__ = "0.3.0"
+__version__ = "0.3.1"
